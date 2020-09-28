@@ -1,2 +1,2 @@
 # comp445
-Scocket programming to stimulate a http protocol
+Scocket programming to simulate a http protocol
