@@ -1,0 +1,13 @@
+{
+  "args": {
+    "assignment": "1", 
+    "course": "networking"
+  }, 
+  "headers": {
+    "Accept": "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2", 
+    "Host": "httpbin.org", 
+    "User-Agent": "Java/1.8.0_121"
+  }, 
+  "origin": "132.205.230.1, 132.205.230.1", 
+  "url": "https://httpbin.org/get?course=networking&assignment=1"
+}

@@ -1,0 +1,3 @@
+fileName=testing123
+why=testing out sendPostByReadingFile
+hope=this works!
