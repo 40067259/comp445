@@ -17,16 +17,7 @@ public class Httpc {
         headers = new HashMap<>();
         iniHeaders();
     }
-//    public Httpc(List<String> list){
-//        headers = new HashMap<>();
-//        iniHeaders();
-//        if(list != null){
-//            for(int i = 0; i < list.size(); i++){
-//                String[] str = list.get(i).split(":");
-//                headers.put(str[0],str[1]);
-//            }
-//        }
-//    }
+
     public void setHeaders(List<String> list){
         if(list != null){
             for(int i = 0; i < list.size(); i++){

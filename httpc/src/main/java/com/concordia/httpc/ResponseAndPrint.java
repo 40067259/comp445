@@ -160,9 +160,9 @@ public class ResponseAndPrint {
         return true;
      }
      //determine is a -d command
-    public boolean isDAddBody(String[] args){
+    public boolean isDAddBody(String[] args,String dataType){
         for(String element: args){
-            if(element.equalsIgnoreCase("-d")) return true;
+            if(element.equalsIgnoreCase(dataType)) return true;
         }
         return false;
     }
@@ -170,7 +170,7 @@ public class ResponseAndPrint {
     public void handleDAddBody(String[]args){
         System.out.println();
         httpc.getConnection(args);
-        String addBody = pickDAddBodyPart(args);
+        String addBody = pickDAddBodyPart(args,"-d");
         addInfoToBody(addBody,args);
         System.out.println(httpc.getBody());
         System.out.println("*********");
@@ -196,14 +196,15 @@ public class ResponseAndPrint {
         httpc.setBody(newBody);
     }
     //get the extra data
-    public String pickDAddBodyPart(String[]args){
+    public String pickDAddBodyPart(String[]args,String dataType){
         int start = -1;
         for(int i = 0; i < args.length - 1; i++){
-            if(args[i].equals("-d")){
+            if(args[i].equals(dataType)){
                 start = i + 1;
                 break;
             }
         }
+        if(dataType == "-f") return args[start];
         return (start == -1 || start >= args.length) ? null : args[start] +" "+ args[start + 1];
     }
     //check if a string contains a substring
@@ -214,6 +215,43 @@ public class ResponseAndPrint {
             if(str.substring(i,i+sub.length()).equalsIgnoreCase(sub)) return i + sub.length();
         }
         return -1;
+    }
+    //get the file contents and add them to body
+    public String getFileContent(String filePath){
+        String solution ="";
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(filePath));
+            String str ="";
+
+            while ((str = in.readLine()) != null) {
+                solution = solution + str+",";
+            }
+            //  System.out.println(str);
+        } catch (IOException e) {
+            System.out.println("The file could not be found !!");
+        }
+        solution = solution.substring(0,solution.length() - 1);
+        return solution;
+    }
+    //Deal file data and and to body
+      public void handleFAddToBody(String[]args){
+          httpc.getConnection(args);
+          String filePath = pickDAddBodyPart(args,"-f");
+          String addBody = getFileContent(filePath);
+          addInfoToBody(addBody,args);
+          System.out.println(httpc.getBody());
+          System.out.println("*********");
+          System.out.println(httpc.getRequest());
+      }
+
+      // parse the request and execute the request
+    public void parse(String[] args){
+        if(isNoConnection(args)) handleNoConnection(args);
+        else if(isNoVerboseConnection(args)) handleNoVerboseConnection(args);
+        if(isGetHConnection(args)) handleHConnection(args);
+        if(isGetVConnection(args)) handleVConnection(args);
+        if(isDAddBody(args,"-d")) handleDAddBody(args);
+        else if (isDAddBody(args,"-f")) handleFAddToBody(args);
     }
 
 }
