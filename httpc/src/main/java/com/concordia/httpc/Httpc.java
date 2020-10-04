@@ -13,6 +13,7 @@ public class Httpc {
     private String response;
     private Map<String, String> headers;
     private String body;
+    private String outputFilePath;
     public Httpc(){
         headers = new HashMap<>();
         iniHeaders();
@@ -71,11 +72,49 @@ public class Httpc {
 
             int data = inputStream.read();
 
+            // redirect
+            /*
+
+            if (data = 200) {
+
+            } else if (Integer.parseInt(Integer.toString(status).substring(0, 1)) == 3)
+            {
+                // connect response code with 3XX
+                if (Integer.parseInt(Integer.toString(data).substring(0, 1)) == 3)
+                {
+                    System.out.println("Redirecting to new url...");
+
+                    String newUrl = connection.getHeaderField("Location");
+
+                    System.out.println("The new URL is now " + newUrl);
+
+                    ResponseAndPrint responseAndPrint = new ResponseAndPrint();
+                    responseAndPrint.parse(args);
+
+                }
+            } else  {
+                System.out.println("Error " + data);
+                System.exit(0);
+            }
+
+            */
+
             while (data != -1) {
                 response.append((char) data);
                 data = inputStream.read();
             }
             this.response = response.toString();
+
+            if (this.outputFilePath != null) {
+                try {
+                    FileWriter myWriter = new FileWriter(outputFilePath, false);
+                    myWriter.write(this.response);
+                    myWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
             //close the socket
             socket.close();
 
@@ -130,4 +169,6 @@ public class Httpc {
     }
     //post
 
+    // output to file
+    public void setOutputFile(String outputFilePath) { this.outputFilePath = outputFilePath }
 }

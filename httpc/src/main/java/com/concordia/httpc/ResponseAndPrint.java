@@ -244,6 +244,26 @@ public class ResponseAndPrint {
           System.out.println(httpc.getRequest());
       }
 
+      // option -o which write the body of the response to the specified file
+        public boolean isOutput(String[]args){
+            for(String element: args){
+                if(element.equalsIgnoreCase("-o"))  return true;
+            }
+            return false;
+        }
+
+        //handle HConnection
+        public void handleOutput(String[]args){
+            String outputFilePath = null;
+            for(int i = 0; i < args.length - 1; i++){
+                if(args[i].equals("-o")){
+                    outputFilePath = args[i+1];
+                    break;
+                }
+            }
+            httpc.setOutputFile(outputFilePath);
+        }
+
       // parse the request and execute the request
     public void parse(String[] args){
         if(isNoConnection(args)) handleNoConnection(args);
@@ -252,6 +272,7 @@ public class ResponseAndPrint {
         if(isGetVConnection(args)) handleVConnection(args);
         if(isDAddBody(args,"-d")) handleDAddBody(args);
         else if (isDAddBody(args,"-f")) handleFAddToBody(args);
+        if(isOutput(args)) handleOutput(args);
     }
 
 }
