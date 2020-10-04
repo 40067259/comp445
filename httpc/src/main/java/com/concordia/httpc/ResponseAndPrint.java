@@ -89,10 +89,8 @@ public class ResponseAndPrint {
     //---------------------------------Handle no verbose connection------------------------------------------
        //a connection without verbose
        public void handleNoVerboseConnection(String[]args){
-         Httpc httpc = new Httpc();
-         httpc.getConnection(args);
-           System.out.println();
-           System.out.println();
+            httpc.getConnection(args);
+            httpc.pickBody();
            System.out.println(httpc.getBody());
        }
        // determine if is a noVerbose connection
