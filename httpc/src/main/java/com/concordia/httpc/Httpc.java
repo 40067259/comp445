@@ -27,19 +27,6 @@ public class Httpc {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        //String papa = "http://httpbin.org/get?course=networking&assignment=1";
-        String papa = "http://httpbin.org/post " +
-                         "                             "+
-                         "How a beautiful day";
-        String[] str = papa.split("                ");
-        System.out.println(str[1]+"**********");
-        URL url = new URL(papa);
-        System.out.println(url.getFile());
-        System.out.println(url.getHost());
-        System.out.println(url.getQuery());
-    }
-
     //connect request: connection to send request and get response
     public void getConnection(String[]args) {
         try {
