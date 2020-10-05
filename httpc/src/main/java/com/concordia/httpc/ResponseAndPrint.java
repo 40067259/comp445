@@ -3,7 +3,10 @@ package com.concordia.httpc;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -130,8 +133,6 @@ public class ResponseAndPrint {
      public void handleHConnection(String[]args){
          System.out.println();
          httpc.setHeaders(pickHAddToHeadersPart(args));
-         //httpc.getConnection(args);
-        // System.out.println(httpc.getRequest());
      }
      //a helper function to add request headers
      public List<String> pickHAddToHeadersPart(String[]args){
@@ -252,25 +253,97 @@ public class ResponseAndPrint {
 
         //handle HConnection
         public void handleOutput(String[]args){
-            String outputFilePath = null;
-            for(int i = 0; i < args.length - 1; i++){
+            String outputFilePath = "";
+            for(int i = 0; i < args.length; i++){
                 if(args[i].equals("-o")){
                     outputFilePath = args[i+1];
                     break;
                 }
             }
-            httpc.setOutputFile(outputFilePath);
+                try {
+                    FileWriter myWriter = new FileWriter(outputFilePath, false);
+
+                    if (this.isNoVerboseConnection(args)) {
+                        System.out.println();
+                        myWriter.write(httpc.getBody());
+                    } else {
+                        myWriter.write(httpc.getResponse());
+                    }
+                    myWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+        }
+
+        public Boolean isRedirect() {
+         String response = httpc.getResponse();
+         String[] responseArray = response.split("\\r?\\n");
+         String responseStatusCodeNumber = responseArray[0].split("\\s+")[1];
+
+         return !responseStatusCodeNumber.equalsIgnoreCase("200");
+        }
+
+        public void handleRedirect(String[] args) throws MalformedURLException {
+
+            String response = httpc.getResponse();
+
+            String theFirstLineOfResponse = response.split("\\r?\\n")[0];
+            String[] theFirstLineArray = theFirstLineOfResponse.split("\\s+");
+
+            String theStatusCode = "";
+            for (int i = 0; i < (theFirstLineArray.length - 1); i ++) {
+                theStatusCode += theFirstLineArray[i+1] + " ";
+            }
+
+            if (theFirstLineArray[1].equalsIgnoreCase("300")) {
+                System.out.println("Redirection 3xx: The URL leads to the status code: " + theStatusCode);
+            } else if (theFirstLineArray[1].equalsIgnoreCase("301") || theFirstLineArray[1].equalsIgnoreCase("302")) {
+                System.out.println("Redirection 3xx: The URL leads to the status code: " + theStatusCode);
+
+                // find the header "location" from response
+                String redirectPath = "";
+                for (String responseLine : response.toString().split("\\r?\\n")) {
+                    if (responseLine.split("\\s+")[0].equalsIgnoreCase("location:")) {
+                        redirectPath = responseLine.split("\\s+")[1];
+                    }
+                }
+
+                String para = args[args.length - 1];
+                URL url = new URL(para);
+                String protocol = url.getProtocol();
+                String host = url.getHost();
+
+                String redirectUrl;
+                if (!redirectPath.contains("http")) {
+                    redirectUrl = protocol + "://" + host + redirectPath;
+                } else {
+                    redirectUrl = redirectPath;
+                }
+
+                System.out.println("The new location is now " + redirectUrl + ". Redirecting now......");
+
+                args[args.length -1] = redirectUrl;
+
+                this.parse(args);
+            } else {
+                System.out.println("ERROR: The URL \"" + args[args.length -1] +  "\" leads to the status code: " + theStatusCode);
+            }
         }
 
       // parse the request and execute the request
-    public void parse(String[] args){
+    public void parse(String[] args) throws MalformedURLException {
         if(isNoConnection(args)) handleNoConnection(args);
-        else if(isNoVerboseConnection(args)) handleNoVerboseConnection(args);
-        if(isGetHConnection(args)) handleHConnection(args);
-        if(isGetVConnection(args)) handleVConnection(args);
-        if(isDAddBody(args,"-d")) handleDAddBody(args);
-        else if (isDAddBody(args,"-f")) handleFAddToBody(args);
-        if(isOutput(args)) handleOutput(args);
+        else {
+            if (isNoVerboseConnection(args)) handleNoVerboseConnection(args);
+            if (isGetVConnection(args)) handleVConnection(args);
+            if (isGetHConnection(args)) handleHConnection(args);
+            if (isDAddBody(args, "-d")) handleDAddBody(args);
+            else if (isDAddBody(args, "-f")) handleFAddToBody(args);
+        }
+
+        if (isOutput(args)) handleOutput(args);
+        if (isRedirect()) handleRedirect(args);
+
     }
 
 }
