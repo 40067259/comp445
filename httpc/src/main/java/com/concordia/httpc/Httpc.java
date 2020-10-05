@@ -1,5 +1,6 @@
 package com.concordia.httpc;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,7 +14,7 @@ public class Httpc {
     private String response;
     private Map<String, String> headers;
     private String body;
-    private String outputFilePath;
+    public String[] newArguments = new String[0];
     public Httpc(){
         headers = new HashMap<>();
         iniHeaders();
@@ -34,6 +35,7 @@ public class Httpc {
             String para = args[args.length - 1];
             URL url = new URL(para);
             String requestMethod = args[0];
+            String protocol = url.getProtocol();
             String path = url.getPath();
             String host = url.getHost();
             String query = url.getQuery();
@@ -59,48 +61,12 @@ public class Httpc {
 
             int data = inputStream.read();
 
-            // redirect
-            /*
-
-            if (data = 200) {
-
-            } else if (Integer.parseInt(Integer.toString(status).substring(0, 1)) == 3)
-            {
-                // connect response code with 3XX
-                if (Integer.parseInt(Integer.toString(data).substring(0, 1)) == 3)
-                {
-                    System.out.println("Redirecting to new url...");
-
-                    String newUrl = connection.getHeaderField("Location");
-
-                    System.out.println("The new URL is now " + newUrl);
-
-                    ResponseAndPrint responseAndPrint = new ResponseAndPrint();
-                    responseAndPrint.parse(args);
-
-                }
-            } else  {
-                System.out.println("Error " + data);
-                System.exit(0);
-            }
-
-            */
-
             while (data != -1) {
                 response.append((char) data);
                 data = inputStream.read();
             }
-            this.response = response.toString();
 
-            if (this.outputFilePath != null) {
-                try {
-                    FileWriter myWriter = new FileWriter(outputFilePath, false);
-                    myWriter.write(this.response);
-                    myWriter.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            this.response = response.toString();
 
             //close the socket
             socket.close();
@@ -151,11 +117,9 @@ public class Httpc {
 
     //pick up body part from response and assign it to body
     public void pickBody() {
+
         String[] str = response.split("\r\n\r\n");
-        body = str[1];
+        setBody(str[1]);
     }
     //post
-
-    // output to file
-    public void setOutputFile(String outputFilePath) { this.outputFilePath = outputFilePath }
 }

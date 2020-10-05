@@ -22,7 +22,6 @@ public class HttpcApplication {
 
         ResponseAndPrint responseAndPrint = new ResponseAndPrint();
         responseAndPrint.parse(args);
-
     }
 
 }

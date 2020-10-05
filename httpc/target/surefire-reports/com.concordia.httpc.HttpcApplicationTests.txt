@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.concordia.httpc.HttpcApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.241 s - in com.concordia.httpc.HttpcApplicationTests
