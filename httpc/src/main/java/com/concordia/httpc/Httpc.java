@@ -152,6 +152,7 @@ public class Httpc {
 
     //pick up body part from response and assign it to body
     public void pickBody() {
+        if(response == null) return;
         String[] str = response.split("\r\n\r\n");
         body = str[1];
     }

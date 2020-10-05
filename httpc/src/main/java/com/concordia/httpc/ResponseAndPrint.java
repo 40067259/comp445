@@ -97,7 +97,8 @@ public class ResponseAndPrint {
        public boolean isNoVerboseConnection(String[]args){
          for(String element: args){
              if(element.equalsIgnoreCase("-v")||element.equalsIgnoreCase("-h")||
-                element.equalsIgnoreCase("-d")||element.equalsIgnoreCase("-f")) return false;
+                element.equalsIgnoreCase("-d")||element.equalsIgnoreCase("-f")||
+                element.equalsIgnoreCase("-o")) return false;
          }
          return true;
        }
