@@ -172,9 +172,6 @@ public class ResponseAndPrint {
         String addBody = pickDAddBodyPart(args,"-d");
         addInfoToBody(addBody,args);
         System.out.println(httpc.getBody());
-        System.out.println("*********");
-        System.out.println(httpc.getRequest());
-
     }
     // a method to add extra info to body
     public void addInfoToBody(String dataToBody,String[]args){
@@ -239,8 +236,6 @@ public class ResponseAndPrint {
           String addBody = getFileContent(filePath);
           addInfoToBody(addBody,args);
           System.out.println(httpc.getBody());
-          System.out.println("*********");
-          System.out.println(httpc.getRequest());
       }
 
       // option -o which write the body of the response to the specified file

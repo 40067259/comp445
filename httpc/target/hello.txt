@@ -1,0 +1,21 @@
+HTTP/1.1 200 OK
+Date: Mon, 05 Oct 2020 03:28:56 GMT
+Content-Type: application/json
+Content-Length: 399
+Connection: close
+Server: gunicorn/19.9.0
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+
+{
+  "args": {
+    "assignment": "1", 
+    "course": "networking"
+  }, 
+  "headers": {
+    "Host": "a0207c42-pmhttpbin-pmhttpb-c018-592832243.us-east-1.elb.amazonaws.com", 
+    "X-Amzn-Trace-Id": "Root=1-5f7a92f8-4ef86b8d41b045f87a0ab7e0"
+  }, 
+  "origin": "166.62.181.50", 
+  "url": "http://a0207c42-pmhttpbin-pmhttpb-c018-592832243.us-east-1.elb.amazonaws.com/get?course=networking&assignment=1"
+}
