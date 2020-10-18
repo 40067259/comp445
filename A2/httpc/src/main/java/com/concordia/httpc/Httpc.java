@@ -123,7 +123,7 @@ public class Httpc {
         if(response != null) {
             String[] str = response.split("\r\n\r\n");
             if(str.length > 1)
-            body = str[1];
+            body = str[str.length - 1];
         }
 
     }

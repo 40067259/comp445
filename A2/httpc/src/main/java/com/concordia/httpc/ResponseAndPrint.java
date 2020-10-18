@@ -78,7 +78,7 @@ public class ResponseAndPrint {
        public void handleNoVerboseConnection(String[]args){
             httpc.getConnection(args);
             httpc.pickBody();
-           System.out.println("NoVerbose");
+           System.out.println("");
            System.out.println(httpc.getBody());
        }
        // determine if is a noVerbose connection
@@ -108,7 +108,6 @@ public class ResponseAndPrint {
       }
       //handle VConnection
       public void handleVConnection(String[]args){
-          System.out.println();
           System.out.println();
           httpc.getConnection(args);
           System.out.println(httpc.getResponse());
