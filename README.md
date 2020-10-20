@@ -1,2 +1,3 @@
 # comp445
-Scocket programming to simulate a http protocol
+Scocket programming to stimulate a http protocol
+Creat a client side with Scocket
