@@ -5,7 +5,15 @@ java -jar httpc-0.0.1-SNAPSHOT.jar
 run the code below from the examples of assignment 1:
 java -jar httpc-0.0.1-SNAPSHOT.jar get "http://httpbin.org/get?course=networking&assignment=1"
 
+java -jar httpc-0.0.1-SNAPSHOT.jar post "http://httpbin.org/post?course=networking&assignment=1"
+
 java -jar httpc-0.0.1-SNAPSHOT.jar get -v "http://httpbin.org/get?course=networking&assignment=1"
 
+java -jar httpc-0.0.1-SNAPSHOT.jar post -h Content-Type:application/json -f content.txt  "http://httpbin.org/post"
+
 java -jar httpc-0.0.1-SNAPSHOT.jar post -h Content-Type:application/json -d '{"Assignment": 1}' "http://httpbin.org/post"
+
+java -jar httpc-0.0.1-SNAPSHOT.jar get -v "http://httpbin.org/status/301"
+
+java -jar httpc-0.0.1-SNAPSHOT.jar get -v -o hello.txt "http://httpbin.org/get?course=networking&assignment=1"
 
