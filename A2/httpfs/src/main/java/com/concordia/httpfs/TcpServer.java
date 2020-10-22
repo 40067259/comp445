@@ -64,7 +64,7 @@ public class TcpServer {
         System.out.println(request);
         //is.close();
         //process the request
-        if(request.substring(0,4).equals("GET")) getFile(socket);
+        if(request.substring(0,3).equals("GET")) getFile(socket);
         else if(request.substring(0,4).equals("POST")) postFile(socket);
         response = statusLine+headers+body;
         //response to client side

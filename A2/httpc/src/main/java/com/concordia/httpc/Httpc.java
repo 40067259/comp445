@@ -41,7 +41,6 @@ public class Httpc {
             int port = url.getPort();
             if(port == -1) port = url.getDefaultPort();
             Socket socket = new Socket(host, port);
-
             InputStream inputStream = socket.getInputStream();
             OutputStream outputStream = socket.getOutputStream();
             // add request line
