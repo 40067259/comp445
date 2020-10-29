@@ -1,0 +1,24 @@
+do Maven clean & install
+
+For server side, go to /httpfs/target on terminal and start the command with below line
+
+java -jar httpfs-0.0.1-SNAPSHOT.jar with argument for port number / without port number and 8088 will be used by default
+
+
+For client side, go to /httpc/target on terminal and start the command with below line
+URL:PORT/path leads to httpfs/home folder!
+
+java -jar httpc-0.0.1-SNAPSHOT.jar with URL format of localhost:port
+
+java -jar httpc-0.0.1-SNAPSHOT.jar get -v "http://localhost:8088/hello.txt"
+
+java -jar httpc-0.0.1-SNAPSHOT.jar get -v "http://localhost:8088/user/hello.txt"
+
+java -jar httpc-0.0.1-SNAPSHOT.jar post -v -d {"Assignment": 2} "http://localhost:8088/datacopy.txt"
+
+java -jar httpc-0.0.1-SNAPSHOT.jar post -v -f ../clientFile.txt "http://localhost:8088/filecopy.txt"
+
+concurrency test: put threads into sleep everytime the application reads a line in a file!
+java -jar httpc-0.0.1-SNAPSHOT.jar get -v "http://localhost:8088/test2.txt"
+java -jar httpc-0.0.1-SNAPSHOT.jar get -v "http://localhost:8088/test1"
+java -jar httpc-0.0.1-SNAPSHOT.jar post -f ../clientFile.txt "http://localhost:8088/test2.txt"

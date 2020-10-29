@@ -16,8 +16,6 @@ public class HttpcApplication {
 
     public static void main(String[] args) throws MalformedURLException {
         SpringApplication.run(HttpcApplication.class, args);
-        System.out.println();
-        System.out.println("--------------------The following info is powered by curl: ----------------------");
 
         ResponseAndPrint responseAndPrint = new ResponseAndPrint();
         responseAndPrint.parse(args);

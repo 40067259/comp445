@@ -13,24 +13,25 @@ public class Httpc {
     private String response;
     private Map<String, String> headers;
     private String body;
-    public Httpc(){
-        body ="";
-        requestBody="";
+
+    public Httpc() {
+        body = "";
+        requestBody = "";
         headers = new HashMap<>();
         iniHeaders();
     }
 
-    public void setHeaders(List<String> list){
-        if(list != null){
-            for(int i = 0; i < list.size(); i++){
+    public void setHeaders(List<String> list) {
+        if (list != null) {
+            for (int i = 0; i < list.size(); i++) {
                 String[] str = list.get(i).split(":");
-                headers.put(str[0],str[1]);
+                headers.put(str[0], str[1]);
             }
         }
     }
 
     //connect request: connection to send request and get response
-    public void getConnection(String[]args) {
+    public void getConnection(String[] args) {
         try {
             String para = args[args.length - 1];
             URL url = new URL(para);
@@ -39,15 +40,15 @@ public class Httpc {
             String host = url.getHost();
             String query = url.getQuery();
             int port = url.getPort();
-            if(port == -1) port = url.getDefaultPort();
+            if (port == -1) port = url.getDefaultPort();
             Socket socket = new Socket(host, port);
             InputStream inputStream = socket.getInputStream();
             OutputStream outputStream = socket.getOutputStream();
             // add request line
             if (query == null) {
-                request = requestMethod.toUpperCase() + " " +"http://"+host+":"+port + path + " HTTP/1.0\r\n\r\n";
+                request = requestMethod.toUpperCase() + " " + "http://" + host + ":" + port + path + " HTTP/1.0\r\n\r\n";
             } else {
-                request = requestMethod.toUpperCase() + " " +"http://"+host+":"+port + path + "?" + query + " HTTP/1.0\r\n\r\n";
+                request = requestMethod.toUpperCase() + " " + "http://" + host + ":" + port + path + "?" + query + " HTTP/1.0\r\n\r\n";
             }
 
             // add headers
@@ -95,9 +96,10 @@ public class Httpc {
         this.headers.put("Accept-Language", "en-us,en;q=0.5");
         this.headers.put("Accept-Encoding", "gzip, deflate");
     }
+
     //setHeader
-    public void setHeader(String k, String v){
-        this.headers.put(k,v);
+    public void setHeader(String k, String v) {
+        this.headers.put(k, v);
     }
 
     public String getRequest() {
@@ -111,18 +113,21 @@ public class Httpc {
     public String getBody() {
         return body;
     }
-    public void setBody(String body){
+
+    public void setBody(String body) {
         this.body = body;
     }
 
-    public void setRequestBody(String requestBody){this.requestBody = requestBody;}
+    public void setRequestBody(String requestBody) {
+        this.requestBody = requestBody;
+    }
 
     //pick up body part from response and assign it to body
     public void pickBody() {
-        if(response != null) {
+        if (response != null) {
             String[] str = response.split("\r\n\r\n");
-            if(str.length > 1)
-            body = str[str.length - 1];
+            if (str.length > 1)
+                body = str[str.length - 1];
         }
 
     }

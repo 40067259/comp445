@@ -1,2 +1,3 @@
-com\concordia\httpfs\HttpfsApplication.class
+com\concordia\httpfs\HttpfsClientHandler.class
 com\concordia\httpfs\TcpServer.class
+com\concordia\httpfs\HttpfsApplication.class

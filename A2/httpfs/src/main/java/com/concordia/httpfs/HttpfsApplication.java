@@ -12,12 +12,12 @@ public class HttpfsApplication {
 
         SpringApplication.run(HttpfsApplication.class, args);
 
-        System.out.println("Server has started...");
+        int port = 8088;
+        for (String arg : args)
+            port = Integer.parseInt(arg);
+        TcpServer server = new TcpServer(port);
 
-        TcpServer server = new TcpServer(8088);
-        while(true){
-            server.serverGetConnection();
-        }
+        server.serverGetConnection();
 
     }
 

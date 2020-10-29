@@ -1,0 +1,3 @@
+{"assignment": this},{"course": file}
+{"assignment": is},{"course": from}
+{"assignment": client},{"course": side}

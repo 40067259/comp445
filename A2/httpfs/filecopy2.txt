@@ -1,4 +1,0 @@
-{"assignment": 2}
-{"course": database}
-{"assignment": 3}
-{"course": networking}
