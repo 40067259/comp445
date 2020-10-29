@@ -108,12 +108,14 @@ public class HttpfsClientHandler extends Thread {
                         buffer.append(line);
                         buffer.append("\n");
                         line = reader.readLine();
+                        /*
                         try {
                             System.out.println(getName() + " sleeps every 2s to test concurrency with readLock() with actual file!");
                             Thread.sleep(2000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+                        */
                     }
                     body = buffer.toString();
                     statusLine = "HTTP/1.0 200 OK\r\n\r\n";
@@ -196,13 +198,14 @@ public class HttpfsClientHandler extends Thread {
             for (String content : data) {
                 //bw.append(content);
                 bw.write(content + "\n");
+                /*
                 try {
                     System.out.println(getName() + " sleeps every 2s to test concurrency with writeLock() with actual file!");
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
+                */
             }
             bw.close();
             fw.close();
