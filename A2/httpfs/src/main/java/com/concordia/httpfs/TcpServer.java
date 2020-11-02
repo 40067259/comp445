@@ -42,7 +42,7 @@ public class TcpServer extends Thread {
             readWriteLock = new ReentrantReadWriteLock();
             System.out.println("Server created with port " + port + "! Now listening...");
         } catch (IOException exception) {
-            System.out.println("Your port number " + this.port + " is out of range or it is not available!");
+            System.out.println("The port number " + this.port + " is out of range or it is not available!");
             System.exit(0);
         }
     }
@@ -51,7 +51,6 @@ public class TcpServer extends Thread {
     public void serverGetConnection() throws IOException {
         Socket socket = null;
         while (true) {
-
             try {
                 // obtain client side socket
                 socket = server.accept();
@@ -60,13 +59,13 @@ public class TcpServer extends Thread {
                 System.out.println("A client is connected : " + socket);
 
                 // getting inputStream and outStream
-                InputStream is = socket.getInputStream();
-                OutputStream os = socket.getOutputStream();
+                InputStream iS = socket.getInputStream();
+                OutputStream oS = socket.getOutputStream();
 
                 System.out.println("Creating a new thread for new client...");
 
                 threadCounter++;
-                Thread thread = new HttpfsClientHandler(socket, is, os, threadCounter, readWriteLock);
+                Thread thread = new HttpfsClientHandler(socket, iS, oS, threadCounter, readWriteLock);
                 thread.start();
             } catch (Exception e) {
                 System.exit(0);

@@ -14,7 +14,7 @@ import java.net.URL;
 @SpringBootApplication
 public class HttpcApplication {
 
-    public static void main(String[] args) throws MalformedURLException {
+    public static void main(String[] args) throws IOException {
         SpringApplication.run(HttpcApplication.class, args);
 
         ResponseAndPrint responseAndPrint = new ResponseAndPrint();

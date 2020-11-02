@@ -1,5 +1,6 @@
 package com.concordia.httpc;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.*;
@@ -13,6 +14,7 @@ public class Httpc {
     private String response;
     private Map<String, String> headers;
     private String body;
+    private Socket socket = null;
 
     public Httpc() {
         body = "";
@@ -41,7 +43,8 @@ public class Httpc {
             String query = url.getQuery();
             int port = url.getPort();
             if (port == -1) port = url.getDefaultPort();
-            Socket socket = new Socket(host, port);
+            if (socket == null)
+                socket = new Socket(host, port);
             InputStream inputStream = socket.getInputStream();
             OutputStream outputStream = socket.getOutputStream();
             // add request line
@@ -69,8 +72,6 @@ public class Httpc {
                 data = inputStream.read();
             }
             this.response = response.toString();
-            //close the socket
-            socket.close();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -130,6 +131,11 @@ public class Httpc {
                 body = str[str.length - 1];
         }
 
+    }
+
+    public void socketDisconnection() throws IOException {
+        if (socket != null)
+            socket.close();
     }
     //post
 

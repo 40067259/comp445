@@ -19,6 +19,7 @@ public class HttpfsClientHandler extends Thread {
     private String body;
     private String response;
     private ReadWriteLock readWriteLock;
+    // getting inputStream and outStream
 
     public HttpfsClientHandler(Socket socket, InputStream iS, OutputStream oS, int threadCounter, ReadWriteLock readWriteLock) {
         this.socket = socket;
@@ -30,35 +31,35 @@ public class HttpfsClientHandler extends Thread {
 
     @Override
     public void run() {
-        while (true) {
-            try {
-                byte[] bytes = new byte[2048 * 2];
-                int length = iS.read(bytes);
-                //get the request
-                request = new String(bytes, 0, length);
-                System.out.println("================================\n");
-                System.out.println("Received the request from client " + this.getName() + ":\n" + request);
-                System.out.println("================================\n");
-                //is.close();
-                //process the request
-                if (request.substring(0, 3).equalsIgnoreCase("GET")) getFile();
-                else if (request.substring(0, 4).equalsIgnoreCase("POST")) postFile();
-                else response = "Please provide a method of GET or POST.";
-                System.out.println("\n- - - - Response for " + this.getName() + " - - - - \n");
-                System.out.print(response);
-                //response to client side
-                OutputStream os = socket.getOutputStream();
-                os.write(response.getBytes());
-                iS.close();
-                os.flush();
-                os.close();
-                System.out.println("================================");
-                System.out.println("Response sent to client " + this.getName() + "!\n");
-                clearResponse();
-                System.out.println("Listening for more request...\n");
-            } catch (IOException | InterruptedException e) {
-            }
+        try {
+            byte[] bytes = new byte[2048 * 2];
+            int length = iS.read(bytes);
+            //get the request
+            request = new String(bytes, 0, length);
+            System.out.println("================================\n");
+            System.out.print("Received the request from client " + this.getName() + ":\n" + request);
+            System.out.println("================================\n");
+            //is.close();
+            //process the request
+            if (request.substring(0, 3).equalsIgnoreCase("GET")) getFile();
+            else if (request.substring(0, 4).equalsIgnoreCase("POST")) postFile();
+            else response = "Please provide a method of GET or POST.";
+            System.out.println("- - - - Response for " + this.getName() + " - - - - ");
+            System.out.print(response);
+            //response to client side
+            OutputStream os = socket.getOutputStream();
+            os.write(response.getBytes());
+            System.out.println("================================");
+            System.out.println("Response sent to client " + this.getName() + "!\n");
+
+            iS.close();
+            oS.flush();
+            oS.close();
+            clearResponse();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
         }
+        System.out.println("Disconnected client " + this.getName() + "!");
     }
 
     public void clearResponse() {
@@ -131,7 +132,8 @@ public class HttpfsClientHandler extends Thread {
         } else if (file.isDirectory()) {
             String[] files = file.list();
             for (String fileOrFolder : files) {
-                body += fileOrFolder + "\n";
+                if (fileOrFolder != null)
+                    body += fileOrFolder + "\n";
             }
             statusLine = "HTTP/1.0 200 OK\r\n\r\n";
             headers = "User-Agent: Concordia\r\n";
