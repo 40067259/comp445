@@ -4,10 +4,9 @@
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
-        <option value="$PROJECT_DIR$/udp/target/maven-archiver/pom.properties" />
         <option value="$PROJECT_DIR$/udp/pom.xml" />
-        <option value="$PROJECT_DIR$/router/target/maven-archiver/pom.properties" />
-        <option value="$PROJECT_DIR$/router/pom.xml" />
+        <option value="$PROJECT_DIR$/httpc/pom.xml" />
+        <option value="$PROJECT_DIR$/httpfs/pom.xml" />
       </list>
     </option>
   </component>
