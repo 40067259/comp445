@@ -1,8 +1,10 @@
 package com.concordia.https;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.DatagramChannel;
@@ -16,13 +18,16 @@ public class UDPServer {
     private SocketAddress routerAddr;
     private SocketAddress localAddr;
     private Server server;
+    private InetAddress clientSocket = null;
 
-    public UDPServer(int localPort) {
+    public UDPServer(int localPort) throws UnknownHostException {
         this.localAddr = new InetSocketAddress("localhost", localPort);
         this.routerAddr = new InetSocketAddress("localhost", 3000);
+        clientSocket = InetAddress.getByName("127.0.0.1");
     }
 
     public void listenAndServe(Server server) throws IOException {
+
         try (DatagramChannel datagramChannel = DatagramChannel.open()) {
             channel = datagramChannel;
             channel.bind(routerAddr);
@@ -31,8 +36,8 @@ public class UDPServer {
                     .allocate(Packet.MAX_LEN)
                     .order(ByteOrder.BIG_ENDIAN);
             this.server = server;
-
             while (true) {
+                Thread.sleep(9000);
                 System.out.println("\nServer waiting for new packet...");
                 buf.clear();
                 routerAddr = channel.receive(buf);
@@ -43,7 +48,7 @@ public class UDPServer {
                 Packet packet = Packet.fromBuffer(buf);
                 buf.flip();
 
-                if (packet.getType() == 0) {
+                if (packet.getType() == 0 ||packet.getType() == 1) {
                     String payload = new String(packet.getPayload(), UTF_8);
                     System.out.println("Packet: " + packet);
                     System.out.println("Payload: " + payload);
@@ -59,6 +64,8 @@ public class UDPServer {
                             .setType(Packet.ACK)
                             .setSequenceNumber(packet.getSequenceNumber() + 1)
                             .setPayload(serverResponsePayload.getBytes())
+                            //.setPortNumber(41830)
+                            //.setPeerAddress(clientSocket)
                             .create();
                     channel.send(resp.toBuffer(), routerAddr);
                 } else if (packet.getType() == Packet.SYN) {
@@ -73,6 +80,8 @@ public class UDPServer {
                 }
                 System.out.println("Done processing for a packet...\n");
             }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

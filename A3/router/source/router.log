@@ -1,0 +1,46 @@
+11:21:23.118943 config: drop-rate=0.00, max-delay=0s, seed=1606666883116947600
+11:21:23.123929 router is listening at :3000
+12:14:47.912545 config: drop-rate=0.00, max-delay=0s, seed=1606670087912545700
+12:14:47.917534 failed to listen on port listen udp :3000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+12:14:52.897634 config: drop-rate=0.00, max-delay=0s, seed=1606670092897634100
+12:14:52.902623 failed to listen on port listen udp :3000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+13:57:40.097327 config: drop-rate=0.00, max-delay=0s, seed=1606676260096335600
+13:57:40.108298 router is listening at :3000
+13:57:40.551746 [queue=0] packet #1, 127.0.0.1:41830 -> 127.0.0.1:8007, sz=30 is delivered
+13:57:45.569911 [queue=0] packet #1, 127.0.0.1:41830 -> 127.0.0.1:8007, sz=30 is delivered
+13:57:50.589151 [queue=0] packet #1, 127.0.0.1:41830 -> 127.0.0.1:8007, sz=30 is delivered
+13:57:55.607102 [queue=0] packet #1, 127.0.0.1:41830 -> 127.0.0.1:8007, sz=30 is delivered
+13:58:00.623251 [queue=0] packet #1, 127.0.0.1:41830 -> 127.0.0.1:8007, sz=30 is delivered
+13:58:05.634164 [queue=0] packet #1, 127.0.0.1:41830 -> 127.0.0.1:8007, sz=30 is delivered
+13:58:10.643620 [queue=0] packet #1, 127.0.0.1:41830 -> 127.0.0.1:8007, sz=30 is delivered
+13:58:15.653707 [queue=0] packet #1, 127.0.0.1:41830 -> 127.0.0.1:8007, sz=30 is delivered
+13:58:20.676446 [queue=0] packet #1, 127.0.0.1:41830 -> 127.0.0.1:8007, sz=30 is delivered
+13:58:25.685669 [queue=0] packet #1, 127.0.0.1:41830 -> 127.0.0.1:8007, sz=30 is delivered
+13:58:30.694536 [queue=0] packet #1, 127.0.0.1:41830 -> 127.0.0.1:8007, sz=30 is delivered
+13:58:35.708489 [queue=0] packet #1, 127.0.0.1:41830 -> 127.0.0.1:8007, sz=30 is delivered
+14:31:48.322369 config: drop-rate=0.00, max-delay=0s, seed=1606678308321373500
+14:31:48.325363 router is listening at :3000
+14:34:21.573876 config: drop-rate=0.00, max-delay=0s, seed=1606678461572878900
+14:34:21.576868 router is listening at :3000
+14:44:02.473070 config: drop-rate=0.00, max-delay=0s, seed=1606679042473070500
+14:44:02.478060 failed to listen on port listen udp :3000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+14:46:26.206637 config: drop-rate=0.00, max-delay=0s, seed=1606679186205637700
+14:46:26.211622 router is listening at :3000
+15:44:55.073978 config: drop-rate=0.00, max-delay=0s, seed=1606682695072980400
+15:44:55.077967 router is listening at :3000
+15:47:45.393494 config: drop-rate=0.00, max-delay=0s, seed=1606682865392496200
+15:47:45.397481 router is listening at :3000
+15:49:57.684176 config: drop-rate=0.00, max-delay=0s, seed=1606682997683178000
+15:49:57.689162 failed to listen on port listen udp :3000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+15:51:06.718024 config: drop-rate=0.00, max-delay=0s, seed=1606683066717021100
+15:51:06.732983 failed to listen on port listen udp :3000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+15:52:37.728212 config: drop-rate=0.00, max-delay=0s, seed=1606683157727210100
+15:52:37.734153 router is listening at :3000
+15:53:17.482237 config: drop-rate=0.00, max-delay=0s, seed=1606683197481239600
+15:53:17.490217 failed to listen on port listen udp :3000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+15:53:19.000854 config: drop-rate=0.00, max-delay=0s, seed=1606683199000854400
+15:53:19.005858 failed to listen on port listen udp :3000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+15:53:19.810254 config: drop-rate=0.00, max-delay=0s, seed=1606683199809257400
+15:53:19.813246 failed to listen on port listen udp :3000: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+15:57:14.898638 config: drop-rate=0.00, max-delay=0s, seed=1606683434898638700
+15:57:14.902628 router is listening at :3000
