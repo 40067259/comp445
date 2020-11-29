@@ -1,9 +1,6 @@
 package com.concordia.udp;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -19,27 +16,27 @@ public class Httpc {
     private UDPClient udpClient;
     private Boolean isConnected;
 
-    public Httpc(){
-        body ="";
-        requestBody="";
+    public Httpc() {
+        body = "";
+        requestBody = "";
         headers = new HashMap<>();
         iniHeaders();
         udpClient = null;
         isConnected = false;
     }
 
-    public void setHeaders(List<String> list){
-        if(list != null){
-            for(int i = 0; i < list.size(); i++){
+    public void setHeaders(List<String> list) {
+        if (list != null) {
+            for (int i = 0; i < list.size(); i++) {
                 String[] str = list.get(i).split(":");
-                headers.put(str[0],str[1]);
+                headers.put(str[0], str[1]);
             }
         }
     }
 
     //connect request: connection to send request and get response
-    public void getConnection(String[]args) {
-        if (isConnected){
+    public void getConnection(String[] args) {
+        if (isConnected) {
             try {
                 String para = args[args.length - 1];
                 URL url = new URL(para);
@@ -49,10 +46,7 @@ public class Httpc {
                 String query = url.getQuery();
                 int port = url.getPort();
                 if (port == -1) port = url.getDefaultPort();
-                Socket socket = new Socket(host, port);
-                InputStream inputStream = socket.getInputStream();
-                OutputStream outputStream = socket.getOutputStream();
-                // add request line
+
                 if (query == null) {
                     request = requestMethod.toUpperCase() + " " + "http://" + host + ":" + port + path + " HTTP/1.0\r\n\r\n";
                 } else {
@@ -62,27 +56,9 @@ public class Httpc {
                 // add headers
                 request += addHeaders();
                 request += requestBody;
-                //System.out.println(request);
 
-                inetSocketAddr = new InetSocketAddress(host,port);
+                inetSocketAddr = new InetSocketAddress(host, port);
                 response = udpClient.runClient(inetSocketAddr, request);
-
-                //send the request through socket
-                outputStream.write(request.getBytes());
-                outputStream.flush();
-
-                //get the response
-                StringBuilder response = new StringBuilder();
-
-                int data = inputStream.read();
-
-                while (data != -1) {
-                    response.append((char) data);
-                    data = inputStream.read();
-                }
-                this.response = response.toString();
-                //close the socket
-                socket.close();
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -95,6 +71,10 @@ public class Httpc {
 
     public Boolean getConnected() {
         return isConnected;
+    }
+
+    public void setConnected(Boolean connected) {
+        isConnected = connected;
     }
 
     public UDPClient getUdpClient() {
@@ -124,9 +104,10 @@ public class Httpc {
         this.headers.put("Accept-Language", "en-us,en;q=0.5");
         this.headers.put("Accept-Encoding", "gzip, deflate");
     }
+
     //setHeader
-    public void setHeader(String k, String v){
-        this.headers.put(k,v);
+    public void setHeader(String k, String v) {
+        this.headers.put(k, v);
     }
 
     public String getRequest() {
@@ -140,18 +121,21 @@ public class Httpc {
     public String getBody() {
         return body;
     }
-    public void setBody(String body){
+
+    public void setBody(String body) {
         this.body = body;
     }
 
-    public void setRequestBody(String requestBody){this.requestBody = requestBody;}
+    public void setRequestBody(String requestBody) {
+        this.requestBody = requestBody;
+    }
 
     //pick up body part from response and assign it to body
     public void pickBody() {
-        if(response != null) {
+        if (response != null) {
             String[] str = response.split("\r\n\r\n");
-            if(str.length > 1)
-            body = str[str.length - 1];
+            if (str.length > 1)
+                body = str[str.length - 1];
         }
 
     }

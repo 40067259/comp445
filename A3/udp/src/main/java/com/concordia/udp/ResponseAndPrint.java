@@ -1,5 +1,4 @@
-package com.concordia.httpc;
-
+package com.concordia.udp;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -214,17 +213,14 @@ public class ResponseAndPrint {
         if(isNoConnection(args)) handleNoConnection(args);
         else httpc.getConnection(args);
 
+
         while (httpc.getConnected()) {
             if(isNoVerboseConnection(args)) handleNoVerboseConnection(args);
             if(isGetHConnection(args)) handleHConnection(args);
             if(isDAddBody(args,"-d")) handleDAddBody(args);
             else if (isDAddBody(args,"-f")) handleFAddToBody(args);
 
-            response = httpc.getUdpClient().runClient(
-                    ,
-                    httpc.getRequest()
-            );
-            httpc.setResponse();
+            httpc.getConnection(args);
         }
 
     }

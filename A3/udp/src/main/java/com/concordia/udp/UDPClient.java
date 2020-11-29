@@ -1,7 +1,5 @@
 package com.concordia.udp;
 
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +21,7 @@ public class UDPClient {
 
     private SocketAddress localAddr;
     private SocketAddress routerAddr;
-    private Long sequenceNumber;
+    private Long sequenceNumber = 1L;
     private boolean isHandShaken;
 
     public UDPClient(int localPort){
@@ -67,12 +65,13 @@ public class UDPClient {
     }
 
     private Long threeWayHandShake(DatagramChannel channel, InetSocketAddress serverAddr) throws IOException {
+        System.out.println("Trying to 3-way handshaking...");
         Packet packet = new Packet.Builder()
                 .setType(Packet.SYN)
                 .setSequenceNumber(sequenceNumber)
                 .setPortNumber(serverAddr.getPort())
                 .setPeerAddress(serverAddr.getAddress())
-                .setPayload("Three-way handshaking!".getBytes())
+                .setPayload("Three-way handshaking request!".getBytes())
                 .create();
         channel.send(packet.toBuffer(), routerAddr);
 
@@ -100,37 +99,5 @@ public class UDPClient {
             timer(packet, channel);
         }
         keys.clear();
-    }
-
-    public void main(String[] args) throws IOException {
-        OptionParser parser = new OptionParser();
-        parser.accepts("router-host", "Router hostname")
-                .withOptionalArg()
-                .defaultsTo("localhost");
-
-        parser.accepts("router-port", "Router port number")
-                .withOptionalArg()
-                .defaultsTo("3000");
-
-        parser.accepts("server-host", "EchoServer hostname")
-                .withOptionalArg()
-                .defaultsTo("localhost");
-
-        parser.accepts("server-port", "EchoServer listening port")
-                .withOptionalArg()
-                .defaultsTo("8007");
-
-        OptionSet opts = parser.parse(args);
-
-        // Router address
-        String routerHost = (String) opts.valueOf("router-host");
-        int routerPort = Integer.parseInt((String) opts.valueOf("router-port"));
-
-        // Server address
-        String serverHost = (String) opts.valueOf("server-host");
-        int serverPort = Integer.parseInt((String) opts.valueOf("server-port"));
-
-        SocketAddress routerAddress = new InetSocketAddress(routerHost, routerPort);
-        InetSocketAddress serverAddress = new InetSocketAddress(serverHost, serverPort);
     }
 }
