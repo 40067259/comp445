@@ -1,6 +1,0 @@
-com\concordia\udp\httpc.class
-com\concordia\udp\Client.class
-com\concordia\udp\UDPClient.class
-com\concordia\udp\Packet.class
-com\concordia\udp\UdpApplication.class
-com\concordia\udp\Packet$Builder.class

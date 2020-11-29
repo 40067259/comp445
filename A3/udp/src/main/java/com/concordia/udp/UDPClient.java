@@ -18,128 +18,119 @@ import java.util.Set;
 import static java.nio.channels.SelectionKey.OP_READ;
 
 public class UDPClient {
-    private Long seq_num = 1L;
-    private Long server_seq_num = null;
+
     private static final Logger logger = LoggerFactory.getLogger(UDPClient.class);
+
     private SocketAddress localAddr;
     private SocketAddress routerAddr;
-    private final String routerAdd = "192.168.2.10";
-    private final Integer routerPort = 3000;
-    private final String clientAdd = "192.168.2.125";
-    private final Integer clientPort = 41830;
-    private final String serverAdd = "192.168.2.3";
-    private final Integer serverPort = 8007;
+    private Long sequenceNumber;
     private boolean isHandShaken;
-    private DatagramChannel channel;
-    InetSocketAddress serverAddr = new InetSocketAddress(serverAdd,serverPort);
 
-   public UDPClient() throws IOException {
-        this.localAddr = new InetSocketAddress(clientAdd,clientPort);
-        this.routerAddr = new InetSocketAddress(routerAdd,routerPort);
-        channel = DatagramChannel.open();
-        channel.connect(localAddr);
-    }
-    public void sendTo(Packet p,InetSocketAddress routerAddr) throws IOException {
-          channel.send(p.toBuffer(),routerAddr);
+    public UDPClient(int localPort){
+        this.localAddr = new InetSocketAddress(localPort);
+        this.routerAddr = new InetSocketAddress("localhost",3000);
     }
 
-    public String runClient(InetSocketAddress serverAddr,String request) throws IOException {
-        String payload = "";
-        boolean correct_seq = false;
-
-        //try(DatagramChannel channel = DatagramChannel.open()){
-           // channel.bind(this.localAddr);
-           // seq_num = threeWayHandShake(this.channel, this.serverAddr);
-          /*  if(this.isHandShaken){
-                Packet p = null;
+    public String runClient(InetSocketAddress serverAddr, String request) throws IOException {
+        String payload = null;
+        try (DatagramChannel channel = DatagramChannel.open()) {
+            channel.bind(localAddr);
+            sequenceNumber = threeWayHandShake(channel, serverAddr);
+            if (isHandShaken) {
+                Packet packet = null;
                 if(request.getBytes().length <= Packet.MAX_LEN){
-                    p = new Packet.Builder()
-                            .setType(0)
-                            .setSequenceNumber(seq_num + 1)
+                    packet = new Packet.Builder()
+                            .setType(Packet.DATA)
+                            .setSequenceNumber(sequenceNumber + 1)
                             .setPortNumber(serverAddr.getPort())
                             .setPeerAddress(serverAddr.getAddress())
                             .setPayload(request.getBytes())
                             .create();
-                }else{
-                    return "I don't know how to split into 2 packets lol";
-                }*/
-                Packet p = new Packet.Builder()
-                        .setType(0)
-                        .setSequenceNumber(seq_num + 1)
-                        .setPortNumber(serverAddr.getPort())
-                        .setPeerAddress(serverAddr.getAddress())
-                        .setPayload(request.getBytes())
-                        .create();
-                channel.send(p.toBuffer(), routerAddr);
+                }
+                channel.send(packet.toBuffer(), routerAddr);
                 logger.info("Sending \"{}\" to router at {}", request, routerAddr);
-                 /**
-                // Try to receive a packet within timeout.
-                timer(channel, p);
 
-                // We just want a single response.
+                timer(packet, channel);
+
                 ByteBuffer buf = ByteBuffer.allocate(Packet.MAX_LEN);
                 routerAddr = channel.receive(buf);
                 buf.flip();
                 Packet resp = Packet.fromBuffer(buf);
                 logger.info("Packet: {}", resp);
                 logger.info("Router: {}", routerAddr);
-                // if(resp.getType() == 1){
-                //     payload = new String(resp.getPayload(), StandardCharsets.UTF_8);
-                //     logger.info("Payload: {}",  payload);
-                //     return payload;
-                // }
                 payload = new String(resp.getPayload(), StandardCharsets.UTF_8);
                 logger.info("Payload: {}",  payload);
                 return payload;
-            }**/
-            return null;
+            }
         }
+        return null;
+    }
 
-/*
-    private long threeWayHandShake(DatagramChannel channel,InetSocketAddress serverAddr) throws IOException {
-
-        String testString = "This is a Hand Shake";
-        Packet test = new Packet.Builder()
+    private Long threeWayHandShake(DatagramChannel channel, InetSocketAddress serverAddr) throws IOException {
+        Packet packet = new Packet.Builder()
                 .setType(Packet.SYN)
-                .setSequenceNumber(seq_num)
+                .setSequenceNumber(sequenceNumber)
                 .setPortNumber(serverAddr.getPort())
                 .setPeerAddress(serverAddr.getAddress())
-                .setPayload(testString.getBytes())
+                .setPayload("Three-way handshaking!".getBytes())
                 .create();
-        channel.send(test.toBuffer(), routerAddr);
-        System.out.println("Sent out number 1 SYN packet");
+        channel.send(packet.toBuffer(), routerAddr);
 
-        timer(channel,test);
+        timer(packet, channel);
 
         ByteBuffer buf = ByteBuffer.allocate(Packet.MAX_LEN);
         buf.clear();
         channel.receive(buf);
         buf.flip();
-        Packet p = Packet.fromBuffer(buf);
 
-        System.out.println("Server Message"+new String(p.getPayload(), StandardCharsets.UTF_8));
-        this.isHandShaken = true;
-        System.out.println("Three-way handshake is succesful.You may start sending data.");
-        System.out.println("\r\n");
-        return p.getSequenceNumber();
+        isHandShaken = true;
+        return Packet.fromBuffer(buf).getSequenceNumber();
     }
 
-    private void timer(DatagramChannel channel,Packet packet) throws IOException {
-        // Try to receive a packet within timeout.
+    private void timer(Packet packet, DatagramChannel channel) throws IOException {
         channel.configureBlocking(false);
         Selector selector = Selector.open();
         channel.register(selector, OP_READ);
-        selector.select(100);
+        selector.select(5000);
 
         Set<SelectionKey> keys = selector.selectedKeys();
         if (keys.isEmpty()) {
             logger.error("No response after timeout");
             channel.send(packet.toBuffer(), routerAddr);
-            timer(channel,packet);
+            timer(packet, channel);
         }
         keys.clear();
-        return;
-    }*/
-
     }
 
+    public void main(String[] args) throws IOException {
+        OptionParser parser = new OptionParser();
+        parser.accepts("router-host", "Router hostname")
+                .withOptionalArg()
+                .defaultsTo("localhost");
+
+        parser.accepts("router-port", "Router port number")
+                .withOptionalArg()
+                .defaultsTo("3000");
+
+        parser.accepts("server-host", "EchoServer hostname")
+                .withOptionalArg()
+                .defaultsTo("localhost");
+
+        parser.accepts("server-port", "EchoServer listening port")
+                .withOptionalArg()
+                .defaultsTo("8007");
+
+        OptionSet opts = parser.parse(args);
+
+        // Router address
+        String routerHost = (String) opts.valueOf("router-host");
+        int routerPort = Integer.parseInt((String) opts.valueOf("router-port"));
+
+        // Server address
+        String serverHost = (String) opts.valueOf("server-host");
+        int serverPort = Integer.parseInt((String) opts.valueOf("server-port"));
+
+        SocketAddress routerAddress = new InetSocketAddress(routerHost, routerPort);
+        InetSocketAddress serverAddress = new InetSocketAddress(serverHost, serverPort);
+    }
+}

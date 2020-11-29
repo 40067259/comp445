@@ -3,7 +3,6 @@ package com.concordia.udp;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -12,12 +11,6 @@ import java.nio.ByteOrder;
  * As we don't have unsigned types in Java, we can achieve this by using a larger type.
  */
 public class Packet {
-    public static final int DATA = 0;
-    public static final int ACK = 1;
-    public static final int SYN = 2;
-    public static final int SYN_ACK = 3;
-    public static final int NAK = 4;
-
 
     public static final int MIN_LEN = 11;
     public static final int MAX_LEN = 11 + 1024;
@@ -27,6 +20,12 @@ public class Packet {
     private final InetAddress peerAddress;
     private final int peerPort;
     private final byte[] payload;
+
+    public static final int DATA = 0;
+    public static final int ACK = 1;
+    public static final int SYN = 2;
+    public static final int SYN_ACK = 3;
+    public static final int NAK = 4;
 
 
     public Packet(int type, long sequenceNumber, InetAddress peerAddress, int peerPort, byte[] payload) {
@@ -177,17 +176,5 @@ public class Packet {
         public Packet create() {
             return new Packet(type, sequenceNumber, peerAddress, portNumber, payload);
         }
-
-    }
-
-    public static void main(String[] args) throws IOException {
-        InetAddress ia = InetAddress.getByName("192.168.2.10");
-        byte[] payload = {23,12,18,66,33,12,127,124,22,12,33,34,123,66};
-        Packet pa = new Packet(1,20,ia,3000,payload);
-        System.out.println(pa);
-
-        byte[] arr = new byte[1024];
-        System.out.println(arr[0]);
-        System.out.println(Packet.fromBytes(payload));
     }
 }
