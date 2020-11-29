@@ -35,6 +35,7 @@ public class UDPClient {
         if (isChannelBound) {
             String payload = null;
             try (DatagramChannel channel = DatagramChannel.open()) {
+                sequenceNumber = threeWayHandShake(channel, serverAddr);
                 if (isHandShaken) {
                     Packet packet = null;
                     if (request.getBytes().length <= Packet.MAX_LEN) {
@@ -66,7 +67,6 @@ public class UDPClient {
         else {
             DatagramChannel channel = DatagramChannel.open();
             channel.bind(localAddr);
-            sequenceNumber = threeWayHandShake(channel, serverAddr);
             isChannelBound = true;
             runClient(serverAddr, request);
         }

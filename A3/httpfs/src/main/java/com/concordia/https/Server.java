@@ -1,4 +1,4 @@
-package com.concordia.httpfs;
+package com.concordia.https;
 
 import java.io.*;
 import java.net.*;
