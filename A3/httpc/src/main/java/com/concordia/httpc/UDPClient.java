@@ -25,52 +25,49 @@ public class UDPClient {
     private boolean isHandShaken;
     private boolean isChannelBound;
 
-    public UDPClient(int localPort){
+    public UDPClient(int localPort) {
 
         this.localAddr = new InetSocketAddress(localPort);
-        this.routerAddr = new InetSocketAddress("localhost",3000);
+        this.routerAddr = new InetSocketAddress("localhost", 3000);
     }
 
     public String runClient(InetSocketAddress serverAddr, String request) throws IOException {
         if (isChannelBound) {
             String payload = null;
             try (DatagramChannel channel = DatagramChannel.open()) {
-                sequenceNumber = threeWayHandShake(channel, serverAddr);
-                if (isHandShaken) {
-                    Packet packet = null;
-                    if (request.getBytes().length <= Packet.MAX_LEN) {
-                        packet = new Packet.Builder()
-                                .setType(Packet.DATA)
-                                .setSequenceNumber(sequenceNumber + 1)
-                                .setPortNumber(serverAddr.getPort())
-                                .setPeerAddress(serverAddr.getAddress())
-                                .setPayload(request.getBytes())
-                                .create();
-                    }
-                    channel.send(packet.toBuffer(), routerAddr);
-                    logger.info("Sending \"{}\" to router at {}", request, routerAddr);
-
-                    timer(packet, channel);
-
-                    ByteBuffer buf = ByteBuffer.allocate(Packet.MAX_LEN);
-                    routerAddr = channel.receive(buf);
-                    buf.flip();
-                    Packet resp = Packet.fromBuffer(buf);
-                    logger.info("Packet: {}", resp);
-                    logger.info("Router: {}", routerAddr);
-                    payload = new String(resp.getPayload(), StandardCharsets.UTF_8);
-                    logger.info("Payload: {}", payload);
-                    return payload;
+                Packet packet = null;
+                if (request.getBytes().length <= Packet.MAX_LEN) {
+                    packet = new Packet.Builder()
+                            .setType(Packet.DATA)
+                            .setSequenceNumber(sequenceNumber + 1)
+                            .setPortNumber(serverAddr.getPort())
+                            .setPeerAddress(serverAddr.getAddress())
+                            .setPayload(request.getBytes())
+                            .create();
                 }
+                channel.send(packet.toBuffer(), routerAddr);
+                logger.info("Sending \"{}\" to router at {}", request, routerAddr);
+
+                timer(packet, channel);
+
+                ByteBuffer buf = ByteBuffer.allocate(Packet.MAX_LEN);
+                routerAddr = channel.receive(buf);
+                buf.flip();
+                Packet resp = Packet.fromBuffer(buf);
+                logger.info("Packet: {}", resp);
+                logger.info("Router: {}", routerAddr);
+                payload = new String(resp.getPayload(), StandardCharsets.UTF_8);
+                logger.info("Payload: {}", payload);
+                return payload;
             }
-        }
-        else {
+        } else {
             DatagramChannel channel = DatagramChannel.open();
             channel.bind(localAddr);
             isChannelBound = true;
+            sequenceNumber = threeWayHandShake(channel, serverAddr);
             runClient(serverAddr, request);
+            return null;
         }
-        return null;
     }
 
     private Long threeWayHandShake(DatagramChannel channel, InetSocketAddress serverAddr) throws IOException {
@@ -91,7 +88,6 @@ public class UDPClient {
         channel.receive(buf);
         buf.flip();
 
-        isHandShaken = true;
         return Packet.fromBuffer(buf).getSequenceNumber();
     }
 
