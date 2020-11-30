@@ -40,7 +40,18 @@ public class UDPServer {
             while (true) {
                 System.out.println("\n================================");
                 System.out.println("Server waiting for new packet...");
-                //Thread.sleep(9000);
+
+                /*
+                int sleepSeconds = 1000;
+                System.out.println("Server going to sleep for " + sleepSeconds + " seconds...");
+                try {
+                    Thread.sleep(sleepSeconds);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("Server just woke up...");
+                */
+
                 buf.clear();
                 routerAddr = datagramChannel.receive(buf);
                 System.out.println("New packet arrived! Now processing...");

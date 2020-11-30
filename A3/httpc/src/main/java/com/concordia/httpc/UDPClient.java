@@ -21,7 +21,7 @@ public class UDPClient {
 
     private SocketAddress localAddr;
     private SocketAddress routerAddr;
-    private Long sequenceNumber = 1L;
+    private Long sequenceNumber = 0L;
     private boolean isHandShaken;
 
     public UDPClient(int localPort) {
@@ -36,6 +36,7 @@ public class UDPClient {
             if (!isHandShaken) {
                 channel.bind(localAddr);
                 System.out.println("Trying to 3-way handshaking...");
+                sequenceNumber++;
                 packet = new Packet.Builder()
                         .setType(Packet.SYN)
                         .setSequenceNumber(sequenceNumber)
