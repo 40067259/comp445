@@ -2,6 +2,7 @@ package com.concordia.httpc;
 
 import java.net.InetSocketAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,7 @@ public class Httpc {
     private String response;
     private Map<String, String> headers;
     private String body;
-    private InetSocketAddress inetSocketAddr;
+    private InetSocketAddress inetSocketAddr = null;
     private UDPClient udpClient;
     private Boolean isConnected;
 
@@ -20,7 +21,6 @@ public class Httpc {
         body = "";
         requestBody = "";
         headers = new HashMap<>();
-        iniHeaders();
         udpClient = null;
         isConnected = false;
     }
@@ -59,11 +59,12 @@ public class Httpc {
             request += requestBody;
             System.out.println("Request style");
 
-            inetSocketAddr = new InetSocketAddress(host, port);
+            if (inetSocketAddr == null)
+                inetSocketAddr = new InetSocketAddress(host, port);
             response = udpClient.runClient(inetSocketAddr, request);
             System.out.println("===Response from the server===");
             System.out.println(response);
-
+            System.out.println("================================");
         } catch (Exception e) {
             e.printStackTrace();
         }
