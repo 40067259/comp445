@@ -41,20 +41,18 @@ public class UDPClient {
                         .setSequenceNumber(sequenceNumber)
                         .setPortNumber(serverAddr.getPort())
                         .setPeerAddress(serverAddr.getAddress())
-                        .setPayload("Three-way handshaking request!".getBytes())
+                        .setPayload("Hi S!".getBytes())
                         .create();
                 isHandShaken = true;
-            } else {
-                if (request.getBytes().length <= Packet.MAX_LEN) {
-                    sequenceNumber++;
-                    packet = new Packet.Builder()
-                            .setType(Packet.DATA)
-                            .setSequenceNumber(sequenceNumber)
-                            .setPortNumber(serverAddr.getPort())
-                            .setPeerAddress(serverAddr.getAddress())
-                            .setPayload(request.getBytes())
-                            .create();
-                }
+            } else if (request.getBytes().length <= Packet.MAX_LEN) {
+                sequenceNumber++;
+                packet = new Packet.Builder()
+                        .setType(Packet.DATA)
+                        .setSequenceNumber(sequenceNumber)
+                        .setPortNumber(serverAddr.getPort())
+                        .setPeerAddress(serverAddr.getAddress())
+                        .setPayload(request.getBytes())
+                        .create();
             }
             channel.send(packet.toBuffer(), routerAddr);
             logger.info("Sending \"{}\" to router at {}", request, routerAddr);

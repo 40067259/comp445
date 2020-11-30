@@ -5,7 +5,7 @@ import java.net.*;
 
 public class Server {
     private String request;
-    private final String PREFIX = "home/user/Documents";
+    private final String PREFIX = "../home/user/Documents";
     private String statusLine;
     private String headers;
     private String body;
@@ -30,11 +30,7 @@ public class Server {
 
     public void getFile() throws IOException {
       String path = getPath();
-        System.out.println("path----------->"+path);
         String[] str = path.split("/");
-        for(String e:str){
-            System.out.println("file Element: ---->"+e);
-        }
         String fileName = null;
         if(str.length == 5) {
             if(!str[1].equals("home")||!str[2].equals("user")||!str[3].equals("Documents")){
@@ -46,7 +42,7 @@ public class Server {
             }
 
         }
-        else if(str.length == 2) fileName = "../" + PREFIX + path;
+        else if(str.length == 2) fileName = PREFIX + path;
         else{
             statusLine = "HTTP/1.0 403 Forbidden\r\n\r\n";
             headers = "User-Agent: Concordia\r\n\r\n";
@@ -70,30 +66,46 @@ public class Server {
         return path;
     }
 
-    public void readFileToResponse(String path) throws IOException {
-        InputStream is = null;
-        BufferedReader reader = null;
-        try {
-            is = new FileInputStream(path);
-            String line;
-            reader = new BufferedReader(new InputStreamReader(is));
-            StringBuffer buffer = new StringBuffer();
-            line = reader.readLine();
-            while (line != null) {
-                buffer.append(line);
-                buffer.append("\n");
+    public void readFileToResponse(String path){
+        File file = new File(path);
+
+        if (file.isFile()) {
+            InputStream is = null;
+            BufferedReader reader = null;
+            try {
+                is = new FileInputStream(path);
+                String line;
+                reader = new BufferedReader(new InputStreamReader(is));
+                StringBuffer buffer = new StringBuffer();
                 line = reader.readLine();
+                while (line != null) {
+                    buffer.append(line);
+                    buffer.append("\n");
+                    line = reader.readLine();
+                }
+                body = buffer.toString();
+                statusLine = "HTTP/1.0 200 OK\r\n\r\n";
+                headers = "User-Agent: Concordia\r\n";
+                headers += "Content-Length: " + body.length() + "\r\n";
+                headers += "Content-Type: text/html\r\n\r\n";
+
+            } catch (IOException e) {
+                System.out.println(e);
             }
-            body = buffer.toString();
+        } else if (file.isDirectory()) {
+            String[] files = file.list();
+            for (String fileOrFolder : files) {
+                if (fileOrFolder != null)
+                    body += fileOrFolder + "\n";
+            }
             statusLine = "HTTP/1.0 200 OK\r\n\r\n";
             headers = "User-Agent: Concordia\r\n";
-            headers +="Content-Length: "+body.length()+"\r\n";
-            headers +="Content-Type: text/html\r\n\r\n";
-
-        } catch (FileNotFoundException e) {
+            headers += "Below are the available file(s) and folder(s):\n";
+            body += "\n";
+        } else {
             statusLine = "HTTP/1.0 404 Not Found\r\n\r\n";
             headers = "User-Agent: Concordia\r\n\r\n";
-            body ="";
+            body = "";
             System.out.println("File is not found");
         }
     }

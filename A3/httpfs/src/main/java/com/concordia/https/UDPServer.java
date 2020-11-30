@@ -75,9 +75,10 @@ public class UDPServer {
                 } else if (packet.getType() == Packet.SYN) {
                     System.out.println("3-way handshaking with incoming packet!");
                     System.out.println("Message from package : " + new String(packet.getPayload(), StandardCharsets.UTF_8));
-                    Packet response = packet.toBuilder().setSequenceNumber(sequenceNumber + 1)
+                    Packet response = packet.toBuilder()
                             .setType(Packet.SYN_ACK)
-                            .setPayload("Server received 3-way handshaking request!".getBytes())
+                            .setSequenceNumber(sequenceNumber + 1)
+                            .setPayload("Hi!".getBytes())
                             .create();
                     datagramChannel.send(response.toBuffer(), routerAddr);
                     System.out.println("Sending out 3-way handshaking response!");
