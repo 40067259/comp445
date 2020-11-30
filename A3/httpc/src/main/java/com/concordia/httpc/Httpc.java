@@ -47,7 +47,9 @@ public class Httpc {
             if (port == -1) port = url.getDefaultPort();
 
             if (query == null) {
-                request = requestMethod.toUpperCase() + " " + "http://" + host + ":" + port + path + " HTTP/1.0\r\n\r\n";
+                request = requestMethod.toUpperCase() + " " + "http://" + host + ":" + port + path + " HTTP/1.0\r\n\r\n";//remove HTTP/1.0
+
+
             } else {
                 request = requestMethod.toUpperCase() + " " + "http://" + host + ":" + port + path + "?" + query + " HTTP/1.0\r\n\r\n";
             }
@@ -55,6 +57,7 @@ public class Httpc {
             // TODO check and maybe remove below 2 lines especially addHeaders()
             request += addHeaders();
             request += requestBody;
+            System.out.println("Request style");
 
             if (inetSocketAddr == null)
                 inetSocketAddr = new InetSocketAddress(host, port);
@@ -102,7 +105,7 @@ public class Httpc {
 
     //initialize headers
     public void iniHeaders() {
-        this.headers.put("Host", "http://localhost:8088/");
+        this.headers.put("Host", "http://localhost:41830/");
         this.headers.put("User-Agent", "Concordia-HTTP/1.0");
         this.headers.put("Accept-Language", "en-us,en;q=0.5");
         this.headers.put("Accept-Encoding", "gzip, deflate");

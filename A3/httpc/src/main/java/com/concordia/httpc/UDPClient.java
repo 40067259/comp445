@@ -51,7 +51,8 @@ public class UDPClient {
                             .create();
                 }
                 channel.send(packet.toBuffer(), routerAddr);
-                logger.info("\nSending \"{}\" to router at {}", request, routerAddr);
+                System.out.println("-------------------after client send ms to router--------------------------");
+                logger.info("Sending \"{}\" to router at {}", request, routerAddr);
 
                 timer(packet, channel);
 
@@ -82,11 +83,13 @@ public class UDPClient {
 
         timer(packet, channel);
 
+
         ByteBuffer buf = ByteBuffer.allocate(Packet.MAX_LEN);
         buf.clear();
         channel.receive(buf);
         buf.flip();
-
+        //channel bound
+         isChannelBound = true;
         return Packet.fromBuffer(buf).getSequenceNumber();
     }
 
@@ -94,7 +97,7 @@ public class UDPClient {
         channel.configureBlocking(false);
         Selector selector = Selector.open();
         channel.register(selector, OP_READ);
-        selector.select(5000);
+        selector.select(4000);
 
         Set<SelectionKey> keys = selector.selectedKeys();
         if (keys.isEmpty()) {

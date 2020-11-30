@@ -201,6 +201,7 @@ public class ResponseAndPrint {
         } catch (IOException e) {
             System.out.println("The file could not be found !!");
         }
+        if(solution != null && solution.length() != 0)
         solution = solution.substring(0, solution.length() - 1);
         return solution;
     }
