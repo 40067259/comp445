@@ -46,7 +46,7 @@ public class Server {
             }
 
         }
-        else if(str.length == 2) fileName = PREFIX + path;
+        else if(str.length == 2) fileName = "../" + PREFIX + path;
         else{
             statusLine = "HTTP/1.0 403 Forbidden\r\n\r\n";
             headers = "User-Agent: Concordia\r\n\r\n";

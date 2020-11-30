@@ -12,30 +12,34 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class UDPServer {
 
-    private DatagramChannel channel;
     private SocketAddress routerAddr;
     private SocketAddress localAddr;
     private Server server;
+    private boolean isChannelBound;
 
     public UDPServer(int localPort) {
         this.localAddr = new InetSocketAddress("localhost", localPort);
         this.routerAddr = new InetSocketAddress("localhost", 3000);
+        isChannelBound = false;
     }
 
     public void listenAndServe(Server server) throws IOException {
         try (DatagramChannel datagramChannel = DatagramChannel.open()) {
-            channel = datagramChannel;
-            channel.bind(routerAddr);
-            System.out.println("Server is now listening at " + channel.getLocalAddress());
+            if (!isChannelBound) {
+                datagramChannel.bind(routerAddr);
+                isChannelBound = true;
+            }
+            System.out.println("Server is now listening router at " + datagramChannel.getLocalAddress());
             ByteBuffer buf = ByteBuffer
                     .allocate(Packet.MAX_LEN)
                     .order(ByteOrder.BIG_ENDIAN);
             this.server = server;
 
             while (true) {
-                System.out.println("\nServer waiting for new packet...");
+                System.out.println("\n================================");
+                System.out.println("Server waiting for new packet...");
                 buf.clear();
-                routerAddr = channel.receive(buf);
+                routerAddr = datagramChannel.receive(buf);
                 System.out.println("New packet arrived! Now processing...");
 
                 // Parse a packet from the received raw data.
@@ -60,7 +64,7 @@ public class UDPServer {
                             .setSequenceNumber(packet.getSequenceNumber() + 1)
                             .setPayload(serverResponsePayload.getBytes())
                             .create();
-                    channel.send(resp.toBuffer(), routerAddr);
+                    datagramChannel.send(resp.toBuffer(), routerAddr);
                 } else if (packet.getType() == Packet.SYN) {
                     System.out.println("3-way handshaking with incoming packet!");
                     System.out.println("Message from package : " + new String(packet.getPayload(), StandardCharsets.UTF_8));
@@ -68,7 +72,7 @@ public class UDPServer {
                             .setType(Packet.SYN_ACK)
                             .setPayload("Server received 3-way handshaking request!".getBytes())
                             .create();
-                    channel.send(response.toBuffer(), routerAddr);
+                    datagramChannel.send(response.toBuffer(), routerAddr);
                     System.out.println("Sending out 3-way handshaking response!");
                 }
                 System.out.println("Done processing for a packet...\n");

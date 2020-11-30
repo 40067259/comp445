@@ -26,27 +26,32 @@ public class UDPClient {
     private boolean isChannelBound;
 
     public UDPClient(int localPort) {
-
-        this.localAddr = new InetSocketAddress(localPort);
+        this.localAddr = new InetSocketAddress("localhost", localPort);
         this.routerAddr = new InetSocketAddress("localhost", 3000);
     }
 
     public String runClient(InetSocketAddress serverAddr, String request) throws IOException {
-        if (isChannelBound) {
-            String payload = null;
-            try (DatagramChannel channel = DatagramChannel.open()) {
+        String payload = null;
+        try (DatagramChannel channel = DatagramChannel.open()) {
+            if (!isChannelBound) {
+                channel.bind(localAddr);
+                isChannelBound = true;
+                sequenceNumber = threeWayHandShake(channel, serverAddr);
+                return "Three-way handshaking established!";
+            } else {
                 Packet packet = null;
                 if (request.getBytes().length <= Packet.MAX_LEN) {
+                    sequenceNumber++;
                     packet = new Packet.Builder()
                             .setType(Packet.DATA)
-                            .setSequenceNumber(sequenceNumber + 1)
+                            .setSequenceNumber(sequenceNumber)
                             .setPortNumber(serverAddr.getPort())
                             .setPeerAddress(serverAddr.getAddress())
                             .setPayload(request.getBytes())
                             .create();
                 }
                 channel.send(packet.toBuffer(), routerAddr);
-                logger.info("Sending \"{}\" to router at {}", request, routerAddr);
+                logger.info("\nSending \"{}\" to router at {}", request, routerAddr);
 
                 timer(packet, channel);
 
@@ -54,19 +59,13 @@ public class UDPClient {
                 routerAddr = channel.receive(buf);
                 buf.flip();
                 Packet resp = Packet.fromBuffer(buf);
+                sequenceNumber++;
                 logger.info("Packet: {}", resp);
                 logger.info("Router: {}", routerAddr);
                 payload = new String(resp.getPayload(), StandardCharsets.UTF_8);
                 logger.info("Payload: {}", payload);
                 return payload;
             }
-        } else {
-            DatagramChannel channel = DatagramChannel.open();
-            channel.bind(localAddr);
-            isChannelBound = true;
-            sequenceNumber = threeWayHandShake(channel, serverAddr);
-            runClient(serverAddr, request);
-            return null;
         }
     }
 
