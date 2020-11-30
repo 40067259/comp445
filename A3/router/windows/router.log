@@ -30828,3 +30828,7 @@
 15:57:41.395270 router is listening at :3000
 15:58:24.196092 config: drop-rate=0.00, max-delay=0s, seed=1606683504196092600
 15:58:24.200082 router is listening at :3000
+17:27:50.994922 config: drop-rate=0.20, max-delay=10ms, seed=1
+17:27:51.107425 router is listening at :3000
+20:26:19.392305 config: drop-rate=0.20, max-delay=10ms, seed=1
+20:26:19.395265 router is listening at :3000

@@ -98,7 +98,7 @@ public class UDPClient {
         channel.configureBlocking(false);
         Selector selector = Selector.open();
         channel.register(selector, OP_READ);
-        selector.select(4000);
+        selector.select(3000);
 
         Set<SelectionKey> keys = selector.selectedKeys();
         if (keys.isEmpty()) {
