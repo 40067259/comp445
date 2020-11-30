@@ -18,6 +18,7 @@ public class UDPServer {
     private SocketAddress localAddr;
     private Server server;
     private boolean isChannelBound;
+    private long sequenceNumber = 1L;
 
     public UDPServer(int localPort) throws UnknownHostException {
         this.localAddr = new InetSocketAddress("localhost", localPort);
@@ -49,6 +50,8 @@ public class UDPServer {
                 Packet packet = Packet.fromBuffer(buf);
                 buf.flip();
 
+                sequenceNumber = packet.getSequenceNumber();
+
                 String payload = new String(packet.getPayload(), UTF_8);
                 System.out.println("Packet: " + packet);
                 System.out.println("Payload: " + payload);
@@ -63,7 +66,7 @@ public class UDPServer {
                     // This demonstrate how to create a new packet from an existing packet.
                     Packet resp = packet.toBuilder()
                             .setType(Packet.ACK)
-                            .setSequenceNumber(packet.getSequenceNumber() + 1)
+                            .setSequenceNumber(sequenceNumber + 1)
                             .setPayload(serverResponsePayload.getBytes())
                             //.setPortNumber(41830)
                             //.setPeerAddress(clientSocket)
@@ -72,7 +75,7 @@ public class UDPServer {
                 } else if (packet.getType() == Packet.SYN) {
                     System.out.println("3-way handshaking with incoming packet!");
                     System.out.println("Message from package : " + new String(packet.getPayload(), StandardCharsets.UTF_8));
-                    Packet response = packet.toBuilder().setSequenceNumber(packet.getSequenceNumber() + 1)
+                    Packet response = packet.toBuilder().setSequenceNumber(sequenceNumber + 1)
                             .setType(Packet.SYN_ACK)
                             .setPayload("Server received 3-way handshaking request!".getBytes())
                             .create();
