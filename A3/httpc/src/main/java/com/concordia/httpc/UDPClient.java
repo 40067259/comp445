@@ -34,10 +34,10 @@ public class UDPClient {
         String payload = null;
         try (DatagramChannel channel = DatagramChannel.open()) {
             if (!isChannelBound) {
-                channel.bind(localAddr);
                 isChannelBound = true;
-                sequenceNumber = threeWayHandShake(channel, serverAddr);
-                return "Three-way handshaking established!";
+                Packet responsePacket = threeWayHandShake(channel, serverAddr);
+                sequenceNumber = responsePacket.getSequenceNumber();
+                return new String(responsePacket.getPayload(), StandardCharsets.UTF_8);
             } else {
                 Packet packet = null;
                 if (request.getBytes().length <= Packet.MAX_LEN) {
@@ -57,7 +57,8 @@ public class UDPClient {
                 timer(packet, channel);
 
                 ByteBuffer buf = ByteBuffer.allocate(Packet.MAX_LEN);
-                routerAddr = channel.receive(buf);
+                buf.clear();
+                channel.receive(buf);
                 buf.flip();
                 Packet resp = Packet.fromBuffer(buf);
                 sequenceNumber++;
@@ -70,7 +71,7 @@ public class UDPClient {
         }
     }
 
-    private Long threeWayHandShake(DatagramChannel channel, InetSocketAddress serverAddr) throws IOException {
+    private Packet threeWayHandShake(DatagramChannel channel, InetSocketAddress serverAddr) throws IOException {
         System.out.println("Trying to 3-way handshaking...");
         Packet packet = new Packet.Builder()
                 .setType(Packet.SYN)
@@ -83,14 +84,13 @@ public class UDPClient {
 
         timer(packet, channel);
 
-
         ByteBuffer buf = ByteBuffer.allocate(Packet.MAX_LEN);
         buf.clear();
         channel.receive(buf);
         buf.flip();
-        //channel bound
-         isChannelBound = true;
-        return Packet.fromBuffer(buf).getSequenceNumber();
+
+        isChannelBound = true;
+        return Packet.fromBuffer(buf);
     }
 
     private void timer(Packet packet, DatagramChannel channel) throws IOException {

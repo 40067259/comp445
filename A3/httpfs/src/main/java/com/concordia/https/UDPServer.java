@@ -21,7 +21,6 @@ public class UDPServer {
 
     public UDPServer(int localPort) throws UnknownHostException {
         this.localAddr = new InetSocketAddress("localhost", localPort);
-        this.routerAddr = new InetSocketAddress("localhost", 3000);
         isChannelBound = false;
     }
 
@@ -29,7 +28,7 @@ public class UDPServer {
 
         try (DatagramChannel datagramChannel = DatagramChannel.open()) {
             if (!isChannelBound) {
-                datagramChannel.bind(routerAddr);
+                datagramChannel.bind(localAddr);
                 isChannelBound = true;
             }
             System.out.println("Server is now listening router at " + datagramChannel.getLocalAddress());
@@ -50,12 +49,12 @@ public class UDPServer {
                 Packet packet = Packet.fromBuffer(buf);
                 buf.flip();
 
-                if (packet.getType() == 0 ||packet.getType() == 1) {
-                    String payload = new String(packet.getPayload(), UTF_8);
-                    System.out.println("Packet: " + packet);
-                    System.out.println("Payload: " + payload);
-                    System.out.println("Router: " + routerAddr);
+                String payload = new String(packet.getPayload(), UTF_8);
+                System.out.println("Packet: " + packet);
+                System.out.println("Payload: " + payload);
+                System.out.println("Router: " + routerAddr);
 
+                if (packet.getType() == 0 ||packet.getType() == 1) {
                     String serverResponsePayload = this.server.handleClientPacket(payload);
 
                     // Send the response to the router not the client.
