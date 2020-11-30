@@ -57,7 +57,6 @@ public class Httpc {
             // TODO check and maybe remove below 2 lines especially addHeaders()
             request += addHeaders();
             request += requestBody;
-            System.out.println("Request style");
 
             if (inetSocketAddr == null)
                 inetSocketAddr = new InetSocketAddress(host, port);

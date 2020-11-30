@@ -27,19 +27,17 @@ public class UDPClient {
     public UDPClient(int localPort) {
         this.localAddr = new InetSocketAddress("localhost", localPort);
         this.routerAddr = new InetSocketAddress("localhost", 3000);
-        sequenceNumber++;
     }
 
     public String runClient(InetSocketAddress serverAddr, String request) throws IOException {
         String payload = null;
         try (DatagramChannel channel = DatagramChannel.open()) {
+            Packet packet = null;
             if (!isHandShaken) {
-                Packet responsePacket = threeWayHandShake(channel, serverAddr);
+                channel.bind(localAddr);
+                packet = threeWayHandShake(channel, serverAddr);
                 isHandShaken = true;
-                sequenceNumber = responsePacket.getSequenceNumber();
-                return new String(responsePacket.getPayload(), StandardCharsets.UTF_8);
             } else {
-                Packet packet = null;
                 if (request.getBytes().length <= Packet.MAX_LEN) {
                     sequenceNumber++;
                     packet = new Packet.Builder()
@@ -50,46 +48,36 @@ public class UDPClient {
                             .setPayload(request.getBytes())
                             .create();
                 }
-                channel.send(packet.toBuffer(), routerAddr);
-                System.out.println("-------------------after client send ms to router--------------------------");
-                logger.info("Sending \"{}\" to router at {}", request, routerAddr);
-
-                timer(packet, channel);
-
-                ByteBuffer buf = ByteBuffer.allocate(Packet.MAX_LEN);
-                buf.clear();
-                channel.receive(buf);
-                buf.flip();
-                Packet resp = Packet.fromBuffer(buf);
-                sequenceNumber = resp.getSequenceNumber();
-                logger.info("Packet: {}", resp);
-                logger.info("Router: {}", routerAddr);
-                payload = new String(resp.getPayload(), StandardCharsets.UTF_8);
-                logger.info("Payload: {}", payload);
-                return payload;
             }
+            channel.send(packet.toBuffer(), routerAddr);
+            logger.info("Sending \"{}\" to router at {}", request, routerAddr);
+
+            timer(packet, channel);
+
+            ByteBuffer buf = ByteBuffer.allocate(Packet.MAX_LEN);
+            buf.clear();
+            channel.receive(buf);
+            buf.flip();
+
+            Packet resp = Packet.fromBuffer(buf);
+            sequenceNumber++;
+            logger.info("Packet: {}", resp);
+            logger.info("Router: {}", routerAddr);
+            payload = new String(resp.getPayload(), StandardCharsets.UTF_8);
+            logger.info("Payload: {}", payload);
+            return payload;
         }
     }
 
     private Packet threeWayHandShake(DatagramChannel channel, InetSocketAddress serverAddr) throws IOException {
         System.out.println("Trying to 3-way handshaking...");
-        Packet packet = new Packet.Builder()
+        return new Packet.Builder()
                 .setType(Packet.SYN)
                 .setSequenceNumber(sequenceNumber)
                 .setPortNumber(serverAddr.getPort())
                 .setPeerAddress(serverAddr.getAddress())
                 .setPayload("Three-way handshaking request!".getBytes())
                 .create();
-        channel.send(packet.toBuffer(), routerAddr);
-
-        timer(packet, channel);
-
-        ByteBuffer buf = ByteBuffer.allocate(Packet.MAX_LEN);
-        buf.clear();
-        channel.receive(buf);
-        buf.flip();
-
-        return Packet.fromBuffer(buf);
     }
 
     private void timer(Packet packet, DatagramChannel channel) throws IOException {
