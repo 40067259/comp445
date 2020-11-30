@@ -35,7 +35,14 @@ public class UDPClient {
             Packet packet = null;
             if (!isHandShaken) {
                 channel.bind(localAddr);
-                packet = threeWayHandShake(channel, serverAddr);
+                System.out.println("Trying to 3-way handshaking...");
+                packet = new Packet.Builder()
+                        .setType(Packet.SYN)
+                        .setSequenceNumber(sequenceNumber)
+                        .setPortNumber(serverAddr.getPort())
+                        .setPeerAddress(serverAddr.getAddress())
+                        .setPayload("Three-way handshaking request!".getBytes())
+                        .create();
                 isHandShaken = true;
             } else {
                 if (request.getBytes().length <= Packet.MAX_LEN) {
@@ -67,17 +74,6 @@ public class UDPClient {
             logger.info("Payload: {}", payload);
             return payload;
         }
-    }
-
-    private Packet threeWayHandShake(DatagramChannel channel, InetSocketAddress serverAddr) throws IOException {
-        System.out.println("Trying to 3-way handshaking...");
-        return new Packet.Builder()
-                .setType(Packet.SYN)
-                .setSequenceNumber(sequenceNumber)
-                .setPortNumber(serverAddr.getPort())
-                .setPeerAddress(serverAddr.getAddress())
-                .setPayload("Three-way handshaking request!".getBytes())
-                .create();
     }
 
     private void timer(Packet packet, DatagramChannel channel) throws IOException {
