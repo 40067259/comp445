@@ -24,15 +24,24 @@ public class UDPClient {
     private Long sequenceNumber = 1L;
     private boolean isHandShaken;
     private boolean isChannelBound;
+    private DatagramChannel channel;
 
     public UDPClient(int localPort) {
         this.localAddr = new InetSocketAddress("localhost", localPort);
         this.routerAddr = new InetSocketAddress("localhost", 3000);
+        if(this.channel == null) {
+            try{this.channel = DatagramChannel.open();}
+            catch (Exception e){
+                System.out.println("Something happens in open a DatagramChannel");
+                e.printStackTrace();
+            }
+        }
+
     }
 
     public String runClient(InetSocketAddress serverAddr, String request) throws IOException {
         String payload = null;
-        try (DatagramChannel channel = DatagramChannel.open()) {
+       // try (DatagramChannel channel = DatagramChannel.open()) {
             if (!isChannelBound) {
                 isChannelBound = true;
                 Packet responsePacket = threeWayHandShake(channel, serverAddr);
@@ -68,7 +77,7 @@ public class UDPClient {
                 logger.info("Payload: {}", payload);
                 return payload;
             }
-        }
+        //}
     }
 
     private Packet threeWayHandShake(DatagramChannel channel, InetSocketAddress serverAddr) throws IOException {

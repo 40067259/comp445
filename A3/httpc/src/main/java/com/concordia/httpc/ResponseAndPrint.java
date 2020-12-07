@@ -6,7 +6,11 @@ import java.io.IOException;
 import java.util.*;
 
 public class ResponseAndPrint {
-    Httpc httpc = new Httpc();
+    private Httpc httpc = null;
+
+    public ResponseAndPrint(){
+        httpc = new Httpc();
+    }
 
     //determine if it is a no connection request
     public boolean isNoConnection(String[] args) {
@@ -189,6 +193,8 @@ public class ResponseAndPrint {
 
     //get the file contents and add them to body
     public String getFileContent(String filePath) {
+        System.out.println(filePath+"<--------------------");
+
         String solution = "";
         try {
             BufferedReader in = new BufferedReader(new FileReader(filePath));
@@ -203,6 +209,7 @@ public class ResponseAndPrint {
         }
         if(solution != null && solution.length() != 0)
         solution = solution.substring(0, solution.length() - 1);
+        System.out.println("Content--------------------->"+solution);
         return solution;
     }
 
@@ -210,7 +217,9 @@ public class ResponseAndPrint {
     public void handleFAddToBody(String[] args) {
         String filePath = pickDAddBodyPart(args, "-f");
         String addBody = getFileContent(filePath);
+        System.out.println("addBody***********>"+addBody);
         httpc.setRequestBody(addBody);//------------------------------------
+        System.out.println(httpc.getRequestBody()+"<-------------requestBody");
         addInfoToBody(addBody, args);
         // System.out.println(httpc.getBody());
         // System.out.println("*********");
@@ -224,15 +233,23 @@ public class ResponseAndPrint {
         String userInput = myObj.nextLine();
         String[] inputArgs = userInput.split(" ");
 
-        if (isNoConnection(inputArgs)) handleNoConnection(inputArgs);
-        httpc.setConnection();
-
+      if (isNoConnection(inputArgs)) handleNoConnection(inputArgs);
+           httpc.setConnection();
+           String requestBody="Default";
         while (httpc.getConnected()) {
             if (isNoVerboseConnection(inputArgs)) handleNoVerboseConnection(inputArgs);
             if (isGetHConnection(inputArgs)) handleHConnection(inputArgs);
             if (isDAddBody(inputArgs, "-d")) handleDAddBody(inputArgs);
-            else if (isDAddBody(inputArgs, "-f")) handleFAddToBody(inputArgs);
+            else if (isDAddBody(inputArgs, "-f")){
+                String filePath = pickDAddBodyPart(inputArgs, "-f");
+                requestBody = getFileContent(filePath);
+               // System.out.println("Changed body"+requestBody);
+                httpc.setRequestBody(requestBody);
+              //  System.out.println(httpc.getRequestBody()+"<$$$$$$$in getconnection httpc");
+              //  handleFAddToBody(inputArgs);
+            }
 
+            //System.out.println(httpc.getRequestBody()+"<<<<<<<<real Rbody");
             httpc.getConnection(inputArgs);
 
             System.out.println("\nNew request? Input -1 to disconnect.");

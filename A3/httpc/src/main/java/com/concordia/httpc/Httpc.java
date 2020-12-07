@@ -16,6 +16,7 @@ public class Httpc {
     private InetSocketAddress inetSocketAddr = null;
     private UDPClient udpClient;
     private Boolean isConnected;
+    private String head;
 
     public Httpc() {
         body = "";
@@ -23,6 +24,10 @@ public class Httpc {
         headers = new HashMap<>();
         udpClient = null;
         isConnected = false;
+        head="";
+        iniHeaders();
+        //add this part
+        udpClient = new UDPClient(41830);
     }
 
     public void setHeaders(List<String> list) {
@@ -49,22 +54,22 @@ public class Httpc {
             if (query == null) {
                 request = requestMethod.toUpperCase() + " " + "http://" + host + ":" + port + path + " HTTP/1.0\r\n\r\n";//remove HTTP/1.0
 
-
             } else {
                 request = requestMethod.toUpperCase() + " " + "http://" + host + ":" + port + path + "?" + query + " HTTP/1.0\r\n\r\n";
             }
 
             // TODO check and maybe remove below 2 lines especially addHeaders()
-            request += addHeaders();
-            request += requestBody;
-            System.out.println("Request style");
-
+            addHeaders();
+            request = request + head;
+            request = request+requestBody;
+          //  System.out.println("request2********************>>"+request);
             if (inetSocketAddr == null)
                 inetSocketAddr = new InetSocketAddress(host, port);
+            //here is the key codes to run a udp
             response = udpClient.runClient(inetSocketAddr, request);
             System.out.println("===Response from the server===");
             System.out.println(response);
-            System.out.println("================================");
+           // System.out.println("================================");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -92,15 +97,14 @@ public class Httpc {
     }
 
     //add headers to request
-    public String addHeaders() {
-        StringBuilder headerBuilder = new StringBuilder();
+    public void addHeaders() {
 
         for (Map.Entry<String, String> header : headers.entrySet()) {
-            headerBuilder.append(header.getKey() + ": " + header.getValue() + "\r\n");
-        }
-        headerBuilder.append("\r\n");
 
-        return headerBuilder.toString();
+            head += header.getKey()+": "+header.getValue()+"\r\n";
+        }
+        head += "\r\n";
+
     }
 
     //initialize headers
@@ -122,6 +126,9 @@ public class Httpc {
 
     public String getResponse() {
         return response;
+    }
+    public String getRequestBody() {
+        return requestBody;
     }
 
     public String getBody() {

@@ -1,0 +1,6 @@
+com\concordia\httpc\Packet.class
+com\concordia\httpc\UDPClient.class
+com\concordia\httpc\Httpc.class
+com\concordia\httpc\ResponseAndPrint.class
+com\concordia\HttpcApplication.class
+com\concordia\httpc\Packet$Builder.class

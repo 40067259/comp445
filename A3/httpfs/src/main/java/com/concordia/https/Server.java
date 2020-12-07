@@ -11,7 +11,6 @@ public class Server {
     private String body;
     private String response;
 
-
     public Server() throws IOException {
         request ="";
         response = "";
@@ -24,17 +23,17 @@ public class Server {
         if (request.substring(0, 3).equals("GET")) getFile();
         else if (request.substring(0, 4).equals("POST")) postFile();
         response = statusLine + headers + body;
-
         return response;
     }
 
     public void getFile() throws IOException {
       String path = getPath();
-        System.out.println("path----------->"+path);
+       // System.out.println("path----------->"+path);
         String[] str = path.split("/");
+        /*
         for(String e:str){
             System.out.println("file Element: ---->"+e);
-        }
+        }*/
         String fileName = null;
         if(str.length == 5) {
             if(!str[1].equals("home")||!str[2].equals("user")||!str[3].equals("Documents")){
@@ -84,7 +83,7 @@ public class Server {
                 buffer.append("\n");
                 line = reader.readLine();
             }
-            body = buffer.toString();
+            body ="Folder list is: "+PREFIX+".\r\n"+"Content is: \r\n"+ buffer.toString();
             statusLine = "HTTP/1.0 200 OK\r\n\r\n";
             headers = "User-Agent: Concordia\r\n";
             headers +="Content-Length: "+body.length()+"\r\n";
@@ -103,9 +102,9 @@ public class Server {
         String filePath = path.substring(1);
         String[] str = request.split("\r\n\r\n");
         String requestBody = "";
-        if(str.length >= 3) requestBody = str[2];
+        if(str.length >= 3) requestBody = str[str.length-1];
         String[] data = requestBody.split(",");
-        System.out.println("filePath:-------------->"+filePath);
+        //System.out.println("filePath:-------------->"+filePath);
         FileWriter fw = null;
         BufferedWriter bw = null;
         try {
