@@ -29,54 +29,55 @@ public class UDPClient {
     public UDPClient(int localPort) {
         this.localAddr = new InetSocketAddress("localhost", localPort);
         this.routerAddr = new InetSocketAddress("localhost", 3000);
-        if(this.channel == null) {
-            try{this.channel = DatagramChannel.open();}
-            catch (Exception e){
-                System.out.println("Something happens in open a DatagramChannel");
-                e.printStackTrace();
-            }
+        try {
+            this.channel = DatagramChannel.open();
+            // uncomment below line to use port 41830 but only 1 thread is allowed
+            this.channel.bind(localAddr);
+        } catch (Exception e) {
+            System.out.println("Something happens in open a DatagramChannel");
+            e.printStackTrace();
         }
 
     }
 
     public String runClient(InetSocketAddress serverAddr, String request) throws IOException {
         String payload = null;
-       // try (DatagramChannel channel = DatagramChannel.open()) {
-            if (!isChannelBound) {
-                isChannelBound = true;
-                Packet responsePacket = threeWayHandShake(channel, serverAddr);
-                sequenceNumber = responsePacket.getSequenceNumber();
-                return new String(responsePacket.getPayload(), StandardCharsets.UTF_8);
-            } else {
-                Packet packet = null;
-                if (request.getBytes().length <= Packet.MAX_LEN) {
-                    sequenceNumber++;
-                    packet = new Packet.Builder()
-                            .setType(Packet.DATA)
-                            .setSequenceNumber(sequenceNumber)
-                            .setPortNumber(serverAddr.getPort())
-                            .setPeerAddress(serverAddr.getAddress())
-                            .setPayload(request.getBytes())
-                            .create();
-                }
-                channel.send(packet.toBuffer(), routerAddr);
-                System.out.println("-------------------after client send ms to router--------------------------");
-                logger.info("Sending \"{}\" to router at {}", request, routerAddr);
-
-                timer(packet, channel);
-
-                ByteBuffer buf = ByteBuffer.allocate(Packet.MAX_LEN);
-                buf.clear();
-                channel.receive(buf);
-                buf.flip();
-                Packet resp = Packet.fromBuffer(buf);
+        // try (DatagramChannel channel = DatagramChannel.open()) {
+        if (!isChannelBound) {
+            isChannelBound = true;
+            Packet responsePacket = threeWayHandShake(channel, serverAddr);
+            sequenceNumber = responsePacket.getSequenceNumber();
+            return new String(responsePacket.getPayload(), StandardCharsets.UTF_8);
+        } else {
+            Packet packet = null;
+            if (request.getBytes().length <= Packet.MAX_LEN) {
                 sequenceNumber++;
-                logger.info("Packet: {}", resp);
-                logger.info("Router: {}", routerAddr);
-                payload = new String(resp.getPayload(), StandardCharsets.UTF_8);
-                logger.info("Payload: {}", payload);
-                return payload;
+                packet = new Packet.Builder()
+                        .setType(Packet.DATA)
+                        .setSequenceNumber(sequenceNumber)
+                        .setPortNumber(serverAddr.getPort())
+                        .setPeerAddress(serverAddr.getAddress())
+                        .setPayload(request.getBytes())
+                        .create();
             }
+            channel.send(packet.toBuffer(), routerAddr);
+            System.out.println("-------------------after client send ms to router--------------------------");
+            logger.info("Sending \"{}\" to router at {}", request, routerAddr);
+
+            timer(packet, channel);
+
+            ByteBuffer buf = ByteBuffer.allocate(Packet.MAX_LEN);
+            buf.clear();
+            channel.receive(buf);
+            buf.flip();
+            Packet resp = Packet.fromBuffer(buf);
+            sequenceNumber++;
+            logger.info("Packet: {}", resp);
+            logger.info("Router: {}", routerAddr);
+            payload = new String(resp.getPayload(), StandardCharsets.UTF_8);
+            logger.info("Payload: {}", payload);
+            return payload;
+        }
         //}
     }
 

@@ -26,8 +26,6 @@ public class Httpc {
         isConnected = false;
         head="";
         iniHeaders();
-        //add this part
-        udpClient = new UDPClient(41830);
     }
 
     public void setHeaders(List<String> list) {
@@ -104,6 +102,8 @@ public class Httpc {
     //add headers to request
     public void addHeaders() {
 
+        head = "";
+
         for (Map.Entry<String, String> header : headers.entrySet()) {
 
             head += header.getKey()+": "+header.getValue()+"\r\n";
@@ -114,7 +114,7 @@ public class Httpc {
 
     //initialize headers
     public void iniHeaders() {
-        this.headers.put("Host", "http://localhost:41830/");
+        this.headers.put("Host", "http://localhost:22222/");
         this.headers.put("User-Agent", "Concordia-HTTP/1.0");
         this.headers.put("Accept-Language", "en-us,en;q=0.5");
         this.headers.put("Accept-Encoding", "gzip, deflate");
