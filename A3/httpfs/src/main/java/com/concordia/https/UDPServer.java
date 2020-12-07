@@ -18,6 +18,7 @@ public class UDPServer {
     private SocketAddress localAddr;
     private Server server;
     private boolean isChannelBound;
+    private long sequenceNumber = 1L;
 
     public UDPServer(int localPort) throws UnknownHostException {
         this.localAddr = new InetSocketAddress("localhost", localPort);
@@ -39,7 +40,18 @@ public class UDPServer {
             while (true) {
                 System.out.println("\n================================");
                 System.out.println("Server waiting for new packet...");
-                //Thread.sleep(9000);
+
+                /*
+                int sleepSeconds = 1000;
+                System.out.println("Server going to sleep for " + sleepSeconds + " seconds...");
+                try {
+                    Thread.sleep(sleepSeconds);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("Server just woke up...");
+                */
+
                 buf.clear();
                 routerAddr = datagramChannel.receive(buf);
                 System.out.println("New packet arrived! Now processing...");
@@ -48,6 +60,8 @@ public class UDPServer {
                 buf.flip();
                 Packet packet = Packet.fromBuffer(buf);
                 buf.flip();
+
+                sequenceNumber = packet.getSequenceNumber();
 
                 String payload = new String(packet.getPayload(), UTF_8);
                 System.out.println("Packet: " + packet);
@@ -63,7 +77,7 @@ public class UDPServer {
                     // This demonstrate how to create a new packet from an existing packet.
                     Packet resp = packet.toBuilder()
                             .setType(Packet.ACK)
-                            .setSequenceNumber(packet.getSequenceNumber() + 1)
+                            .setSequenceNumber(sequenceNumber + 1)
                             .setPayload(serverResponsePayload.getBytes())
                             //.setPortNumber(41830)
                             //.setPeerAddress(clientSocket)
@@ -72,9 +86,10 @@ public class UDPServer {
                 } else if (packet.getType() == Packet.SYN) {
                     System.out.println("3-way handshaking with incoming packet!");
                     System.out.println("Message from package : " + new String(packet.getPayload(), StandardCharsets.UTF_8));
-                    Packet response = packet.toBuilder().setSequenceNumber(packet.getSequenceNumber() + 1)
+                    Packet response = packet.toBuilder()
                             .setType(Packet.SYN_ACK)
-                            .setPayload("Server received 3-way handshaking request!".getBytes())
+                            .setSequenceNumber(sequenceNumber + 1)
+                            .setPayload("Hi!".getBytes())
                             .create();
                     datagramChannel.send(response.toBuffer(), routerAddr);
                     System.out.println("Sending out 3-way handshaking response!");

@@ -59,10 +59,15 @@ public class Httpc {
             }
 
             // TODO check and maybe remove below 2 lines especially addHeaders()
+
             addHeaders();
             request = request + head;
             request = request+requestBody;
           //  System.out.println("request2********************>>"+request);
+
+           // request += addHeaders();
+            //request += requestBody;
+
             if (inetSocketAddr == null)
                 inetSocketAddr = new InetSocketAddress(host, port);
             //here is the key codes to run a udp
